@@ -1,14 +1,5 @@
 #include "Enemy.h"
 
-void Enemy::update(float dt, int screenWidth) {
-    if (!alive) return;
+void Enemy::update(float dt, int screenWidth) {}
 
-    x += moveDir * moveSpeed * dt;
-    if (x <= 0 || x + w >= screenWidth)
-        moveDir = -moveDir;
-}
-
-void Enemy::render(const Camera& camera, Sprite* sprite) {
-    if (!alive) return;
-    drawSprite(sprite, (int)x, (int)camera.toScreenY(y));
-}
+void Enemy::render(const Camera& camera, Sprite* sprite) {}

@@ -15,7 +15,6 @@ public:
     void update(float dt, int screenWidth, const Camera& camera);
     void render(const Camera& camera);
 
-    // Returns true if player landed on a platform (triggers jump)
     bool checkCollision(Player& player);
 
     const std::vector<Platform>& getPlatforms() const { return platforms; }

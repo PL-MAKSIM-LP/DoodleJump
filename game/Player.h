@@ -25,7 +25,6 @@ public:
     void onKeyPressed(FRKey k);
     void onKeyReleased(FRKey k);
 
-    // AABB bounds in world space
     float left()   const { return x; }
     float right()  const { return x + w; }
     float top()    const { return y; }
