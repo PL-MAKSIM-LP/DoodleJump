@@ -11,7 +11,8 @@ class Player {
   float velY = 0.0f;
   int width = 50;
   int height = 60;
-  const int MOVE_SPEED = 10;
+
+  static constexpr float MOVE_SPEED = 250.0f;
 
   bool alive = true;
 

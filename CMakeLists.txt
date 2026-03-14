@@ -16,6 +16,7 @@ add_executable(DoodleJump
     game/Projectile.cpp
     game/ProjectileManager.cpp
     game/ScoreDisplay.cpp
+    game/Commands/InputHandler.cpp
 )
 
 target_link_libraries(DoodleJump
