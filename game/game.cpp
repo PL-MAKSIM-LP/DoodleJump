@@ -34,11 +34,14 @@ public:
 
     virtual bool Init()
     {
+        background = createSprite("../data/jungle-bck@2x.png");
+        setSpriteSize(background, screenHeight, screenWidth);
         return true;
     }
 
     virtual void Close()
     {
+        destroySprite(background);
     }
 
     virtual bool Tick()
