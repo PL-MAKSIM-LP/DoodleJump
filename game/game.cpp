@@ -29,8 +29,8 @@ class MyFramework : public Framework {
 
  public:
   virtual void PreInit(int& width, int& height, bool& fullscreen) override {
-    width = screenWidth;
-    height = screenHeight;
+    screenWidth = width;
+    screenHeight = height;
     fullscreen = false;
   }
 
@@ -48,8 +48,14 @@ class MyFramework : public Framework {
   virtual void Close() { destroySprite(background); }
 
   virtual bool Tick() {
+    unsigned int now = getTickCount();
+    float dt = (now - lastTick) / 1000.0f;
+    lastTick = now;
+
     drawSprite(background, 0, 0);
+    player.update(dt, screenWidth);
     player.render(camera);
+
     return false;
   }
 
