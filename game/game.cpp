@@ -46,6 +46,7 @@ public:
 
     virtual bool Tick()
     {
+        drawSprite(background,0,0);
         return false;
     }
 
