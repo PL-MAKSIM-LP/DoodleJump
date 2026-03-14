@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/DoodleJump.dir/game/game.cpp.o -o DoodleJump  -Wl,-rpath,/home/mpliashko/Desktop/DoodleJump/framework/linux /home/mpliashko/Desktop/DoodleJump/framework/linux/libFrameworkRelease.so -lSDL2 -lSDL2_image 
