@@ -19,6 +19,7 @@ Player::~Player() {
 void Player::init(int screenWidth, int screenHeight) {
   spriteLeft = createSprite("../data/lik-left.png");
   spriteRight = createSprite("../data/lik-right.png");
+  lastSprite = spriteLeft;
 
   setSpriteSize(spriteLeft, width, height);
   setSpriteSize(spriteRight, width, height);
@@ -31,9 +32,11 @@ void Player::update(float dt, int screenWidth) {
   velX = 0;
   if (movingLeft) {
     velX -= MOVE_SPEED;
+    lastSprite = spriteLeft;
   }
   if (movingRight) {
     velX += MOVE_SPEED;
+    lastSprite = spriteRight;
   }
 
   x += velX * dt;
@@ -42,8 +45,10 @@ void Player::update(float dt, int screenWidth) {
 void Player::render(const Camera& camera) {
   if (velX > 0) {
     drawSprite(spriteRight, x, y);
-  } else {
+  } else if (velX < 0) {
     drawSprite(spriteLeft, x, y);
+  } else {
+    drawSprite(lastSprite, x, y);
   }
 }
 

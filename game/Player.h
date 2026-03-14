@@ -32,6 +32,7 @@ class Player {
  private:
   Sprite* spriteLeft = nullptr;
   Sprite* spriteRight = nullptr;
+  Sprite* lastSprite = nullptr;
 
   bool movingLeft = false;
   bool movingRight = false;
