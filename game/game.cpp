@@ -35,7 +35,7 @@ public:
     virtual bool Init()
     {
         background = createSprite("../data/jungle-bck@2x.png");
-        setSpriteSize(background, screenHeight, screenWidth);
+        setSpriteSize(background, screenWidth, screenHeight);
         return true;
     }
 
