@@ -36,6 +36,7 @@ public:
     {
         background = createSprite("../data/jungle-bck@2x.png");
         setSpriteSize(background, screenWidth, screenHeight);
+        player.init(screenWidth, screenHeight);
         return true;
     }
 
@@ -47,6 +48,7 @@ public:
     virtual bool Tick()
     {
         drawSprite(background,0,0);
+        player.render(camera);
         return false;
     }
 

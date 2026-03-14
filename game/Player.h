@@ -9,8 +9,8 @@ public:
     float y = 0.0f;
     float velX = 0.0f;
     float velY = 0.0f;
-    int w = 50;
-    int h = 60;
+    int widht = 50;
+    int height = 60;
 
     bool alive = true;
 
@@ -26,9 +26,9 @@ public:
     void onKeyReleased(FRKey k);
 
     float left()   const { return x; }
-    float right()  const { return x + w; }
+    float right()  const { return x + widht; }
     float top()    const { return y; }
-    float bottom() const { return y + h; }
+    float bottom() const { return y + height; }
 
 private:
     Sprite* spriteLeft  = nullptr;
