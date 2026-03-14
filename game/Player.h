@@ -4,36 +4,34 @@
 #include "Camera.h"
 
 class Player {
-public:
-    float x = 0.0f;
-    float y = 0.0f;
-    float velX = 0.0f;
-    float velY = 0.0f;
-    int widht = 50;
-    int height = 60;
+ public:
+  float x = 0.0f;
+  float y = 0.0f;
+  float velX = 0.0f;
+  float velY = 0.0f;
+  int width = 50;
+  int height = 60;
+  const int MOVE_SPEED = 10;
 
-    bool alive = true;
+  bool alive = true;
 
-    Player();
-    ~Player();
+  Player();
+  ~Player();
 
-    void init(int screenWidth, int screenHeight);
-    void update(float dt, int screenWidth);
-    void render(const Camera& camera);
+  void init(int screenWidth, int screenHeight);
+  void update(float dt, int screenWidth);
+  void render(const Camera& camera);
 
-    void jump();
-    void onKeyPressed(FRKey k);
-    void onKeyReleased(FRKey k);
+  void startMoveLeft();
+  void startMoveRight();
+  void stopMoveLeft();
+  void stopMoveRight();
+  void jump();
 
-    float left()   const { return x; }
-    float right()  const { return x + widht; }
-    float top()    const { return y; }
-    float bottom() const { return y + height; }
+ private:
+  Sprite* spriteLeft = nullptr;
+  Sprite* spriteRight = nullptr;
 
-private:
-    Sprite* spriteLeft  = nullptr;
-    Sprite* spriteRight = nullptr;
-
-    bool movingLeft  = false;
-    bool movingRight = false;
+  bool movingLeft = false;
+  bool movingRight = false;
 };
