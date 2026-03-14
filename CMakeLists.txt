@@ -5,7 +5,18 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(framework/inc)
 
-add_executable(DoodleJump game/game.cpp)
+add_executable(DoodleJump
+    game/game.cpp
+    game/Camera.cpp
+    game/Player.cpp
+    game/Platform.cpp
+    game/PlatformManager.cpp
+    game/Enemy.cpp
+    game/EnemyManager.cpp
+    game/Projectile.cpp
+    game/ProjectileManager.cpp
+    game/ScoreDisplay.cpp
+)
 
 target_link_libraries(DoodleJump
     ${CMAKE_SOURCE_DIR}/framework/linux/libFrameworkRelease.so

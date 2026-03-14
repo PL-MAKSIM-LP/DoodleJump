@@ -1,3 +1,0 @@
-/home/mpliashko/Desktop/DoodleJump/build-linux/CMakeFiles/DoodleJump.dir
-/home/mpliashko/Desktop/DoodleJump/build-linux/CMakeFiles/edit_cache.dir
-/home/mpliashko/Desktop/DoodleJump/build-linux/CMakeFiles/rebuild_cache.dir
