@@ -15,7 +15,7 @@ void EnemyManager::init(int w, int h) {
   screenWidth = w;
   screenHeight = h;
 
-  sprite = createSprite("../data/01-Breakout-Tiles.png");
+  sprite = createSprite("../sprites/enemy.png");
   if (sprite) setSpriteSize(sprite, 50, 40);
 
   // do not spawn enemies immediately — enable spawning when player reaches
@@ -23,6 +23,8 @@ void EnemyManager::init(int w, int h) {
   spawnEnabled = false;
   spawnStartY = static_cast<float>(screenHeight) -
                 2000.0f;  // start spawning after this world Y
+  // spawn ahead distance: place spawned enemies this far above player
+  spawnAhead = static_cast<float>(screenHeight) + 200.0f;
   lastSpawnY = static_cast<float>(screenHeight);  // last spawn starts at bottom
 }
 
@@ -36,14 +38,23 @@ void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
   // enable spawning once player reaches the configured start Y
   if (!spawnEnabled && playerY <= spawnStartY) {
     spawnEnabled = true;
-    // spawn a few enemies around current player height
-    spawnEnemy(playerY - 200.0f);
-    lastSpawnY = playerY - 200.0f;
+    // first spawn should be ahead of the player (off-screen)
+    float firstY = playerY - spawnAhead;
+    // spawn an initial batch so player won't see enemies pop-in immediately
+    const int initialBatch = 3;
+    float y = firstY;
+    for (int i = 0; i < initialBatch; ++i) {
+      spawnEnemy(y);
+      y -= spawnInterval;
+    }
+    lastSpawnY =
+        y + spawnInterval;  // lastSpawnY stores most-up spawn (smallest y)
   }
 
   // if spawning enabled, spawn periodically as player moves up
   if (spawnEnabled) {
-    while (lastSpawnY - playerY >= spawnInterval) {
+    // when player gets within spawnInterval of the most-up spawn, add another
+    while (playerY <= lastSpawnY + spawnInterval) {
       float nextY = lastSpawnY - spawnInterval;
       spawnEnemy(nextY);
       lastSpawnY = nextY;

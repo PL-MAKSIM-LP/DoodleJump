@@ -27,9 +27,14 @@ class PlatformManager {
   int screenWidth = 0;
   int screenHeight = 0;
 
-  float spawnGapY = 120.0f;
+  // spawn density: ~3 platforms per 100px -> gap ~33px
+  float spawnGapY = 100.0f;  // base gap (used only as fallback)
   float lastSpawnY = 0.0f;
-  int maxActive = 20;
+  // limit active platforms to a reasonable number
+  int maxActive = 80;
+
+  // compute adaptive gap based on Y (higher -> larger gap)
+  float computeSpawnGap(float y) const;
 
   std::mt19937 gen;
   std::uniform_int_distribution<int> xDist;

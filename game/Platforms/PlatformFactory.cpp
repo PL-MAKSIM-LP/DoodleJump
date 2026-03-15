@@ -10,19 +10,19 @@
 
 std::unique_ptr<IPlatform> PlatformFactory::create(int x, int y,
                                                    PlatformType type) {
-  const char* path = "../data/01-Breakout-Tiles.png";
+  const char* path = "../sprites/normal.png";
   switch (type) {
     case PlatformType::NORMAL:
-      path = "../data/01-Breakout-Tiles.png";
+      path = "../sprites/normal.png";
       break;
     case PlatformType::MOVING_HORIZONTAL:
-      path = "../data/01-Breakout-Tiles.png";
+      path = "../sprites/moveHorizontal.png";
       break;
     case PlatformType::MOVING_VERTICAL:
-      path = "../data/01-Breakout-Tiles.png";
+      path = "../sprites/moveVertical.png";
       break;
     case PlatformType::BREAKABLE:
-      path = "../data/01-Breakout-Tiles.png";
+      path = "../sprites/break1.png";
       break;
   }
 

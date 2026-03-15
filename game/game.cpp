@@ -8,13 +8,14 @@
 #include "Commands/InputHandler.h"
 #include "Commands/MoveLeftCommand.h"
 #include "Commands/MoveRightCommand.h"
+#include "Commands/ShootCommand.h"
 #include "Enemy/EnemyManager.h"
 #include "GameState.h"
 #include "Platforms/Platform.h"
 #include "Platforms/PlatformManager.h"
 #include "Player.h"
-#include "ProjectileManager.h"
 #include "ScoreDisplay.h"
+#include "projectile/ProjectileManager.h"
 
 class MyFramework : public Framework {
   int screenWidth = 390;
@@ -52,8 +53,11 @@ class MyFramework : public Framework {
 
     inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
     inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
+    inputHandler.setCommand(FRKey::UP, std::make_unique<ShootCommand>(
+                                           &projectileManager, &enemyManager));
     platformManager.init(screenWidth, screenHeight);
     enemyManager.init(screenWidth, screenHeight);
+    projectileManager.init();
 
     player.jump();
 
@@ -70,9 +74,10 @@ class MyFramework : public Framework {
     drawSprite(background, 0, 0);
     player.update(dt, screenWidth);
     platformManager.update(dt, player);
-    enemyManager.update(dt, screenWidth, camera, player.y);
 
-    // check collision with enemies
+    enemyManager.update(dt, screenWidth, camera, player.y);
+    projectileManager.update(dt, camera);
+
     if (enemyManager.checkPlayerCollision(player)) {
       std::cout << "Player collided with enemy" << std::endl;
     }
@@ -82,6 +87,16 @@ class MyFramework : public Framework {
     player.render(camera);
     platformManager.render(camera);
     enemyManager.render(camera);
+    // check projectile collisions with enemies
+    for (auto& pr : projectileManager.getProjectiles()) {
+      if (!pr.active) continue;
+      if (enemyManager.checkProjectileCollision(pr.left(), pr.top(),
+                                                pr.right() - pr.left(),
+                                                pr.bottom() - pr.top())) {
+        pr.active = false;
+      }
+    }
+    projectileManager.render(camera);
 
     return false;
   }

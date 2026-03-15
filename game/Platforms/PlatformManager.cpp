@@ -38,7 +38,9 @@ void PlatformManager::update(float dt, Player& player) {
                   platforms.end());
 
   while ((int)platforms.size() < maxActive) {
-    float spawnY = lastSpawnY - spawnGapY;
+    // compute adaptive gap: fewer platforms at higher altitudes
+    float gap = computeSpawnGap(lastSpawnY);
+    float spawnY = lastSpawnY - gap;
     int x = xDist(gen);
     PlatformType type = selectPlatformType(spawnY);
     spawn(static_cast<float>(x), spawnY, type);
@@ -49,6 +51,23 @@ void PlatformManager::update(float dt, Player& player) {
     if (p->active && p->isColliding(player)) {
       p->onCollide(player);
     }
+  }
+}
+
+float PlatformManager::computeSpawnGap(float y) const {
+  // y decreases as player goes up. Use thresholds to interpolate gap.
+  // At low altitude: smaller gap (more platforms). At high altitude: larger
+  // gap.
+  float lowGap = 80.0f;  // ~1.25 platforms / 100px
+  float midGap = 110.0f;
+  float highGap = 150.0f;  // ~2 platforms / 300px
+
+  if (y > easyThreshold) {
+    return lowGap;
+  } else if (y > mediumThreshold) {
+    return midGap;
+  } else {
+    return highGap;
   }
 }
 

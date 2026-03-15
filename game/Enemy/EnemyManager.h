@@ -36,8 +36,10 @@ class EnemyManager {
   // spawn control
   bool spawnEnabled = false;
   float spawnStartY = 0.0f;  // world Y at which enemies start spawning
-  float lastSpawnY = 0.0f;   // world Y of last spawn
+  float lastSpawnY = 0.0f;   // world Y of last (most-up) spawn
   float spawnInterval = 400.0f;
+  float spawnAhead =
+      0.0f;  // how far ahead of player (in world Y) to place new enemies
 
   void spawnEnemy(float y);
 };
