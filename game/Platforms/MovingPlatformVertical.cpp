@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "../Constants.h"
+
 void MovingPlatformVertical::update(float dt, int screenWidth) {
   y += moveDir * moveSpeed * dt;
   if (y <= minY) {
@@ -14,6 +16,6 @@ void MovingPlatformVertical::update(float dt, int screenWidth) {
 }
 
 void MovingPlatformVertical::setMovement() {
-  minY = y - 50.0f;
-  maxY = y + 50.0f;
+  minY = y - MovingPlatformConfig::SWING;
+  maxY = y + MovingPlatformConfig::SWING;
 }

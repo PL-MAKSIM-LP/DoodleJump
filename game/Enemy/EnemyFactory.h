@@ -1,17 +1,18 @@
 #pragma once
 
-#include "Enemy.h"
+#include <memory>
+
+#include "IEnemy.h"
 
 class EnemyFactory {
  public:
-  EnemyFactory() = default;
-  ~EnemyFactory() = default;
+  EnemyFactory();
+  ~EnemyFactory();
 
-  // Create a basic stationary enemy at (x,y)
-  Enemy create(int x, int y) {
-    Enemy e;
-    e.x = static_cast<float>(x);
-    e.y = static_cast<float>(y);
-    return e;
-  }
+  std::unique_ptr<IEnemy> create(int x, int y,
+                                 EnemyType type = EnemyType::GROUND);
+
+ private:
+  Sprite* groundSprite = nullptr;
+  Sprite* flyingSprite = nullptr;
 };

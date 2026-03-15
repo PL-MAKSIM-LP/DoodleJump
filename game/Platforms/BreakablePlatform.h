@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Constants.h"
 #include "Platform.h"
 
 class BreakablePlatform : public IPlatform {
@@ -14,8 +15,10 @@ class BreakablePlatform : public IPlatform {
   bool broken = false;
   bool falling = false;
 
-  int breakStage = 0;      // 0 == intact, 1..N animation stages
-  int maxBreakStages = 4;  // number of breaking frames (e.g. break2..break5)
+  int breakStage = 0;  // 0 == intact, 1..N animation stages
+  int maxBreakStages =
+      BreakablePlatformConfig::MAX_BREAK_STAGES;  // number of breaking frames
   float breakTimer = 0.0f;
-  float breakStepDuration = 0.12f;  // seconds per frame
+  float breakStepDuration =
+      BreakablePlatformConfig::BREAK_STEP_DURATION;  // seconds per frame
 };

@@ -1,16 +1,17 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
-#include "../../framework/Framework.h"
 #include "../Camera.h"
 #include "../Player.h"
-#include "Enemy.h"
+#include "EnemyFactory.h"
+#include "IEnemy.h"
 
 class EnemyManager {
  public:
-  EnemyManager();
-  ~EnemyManager();
+  EnemyManager() = default;
+  ~EnemyManager() = default;
 
   void init(int screenWidth, int screenHeight);
   // playerY: current player world Y coordinate (used to decide when to spawn
@@ -24,11 +25,13 @@ class EnemyManager {
   // Marks enemy as dead if hit by a projectile AABB
   bool checkProjectileCollision(float px, float py, float pw, float ph);
 
-  std::vector<Enemy>& getEnemies() { return enemies; }
+  std::vector<std::unique_ptr<IEnemy>>& getEnemies() { return enemies; }
+
+  // allow other systems to provide PlatformManager for spawn placement
+  void setPlatformManager(class PlatformManager* pm);
 
  private:
-  std::vector<Enemy> enemies;
-  Sprite* sprite = nullptr;
+  std::vector<std::unique_ptr<IEnemy>> enemies;
 
   int screenWidth = 0;
   int screenHeight = 0;
@@ -37,9 +40,13 @@ class EnemyManager {
   bool spawnEnabled = false;
   float spawnStartY = 0.0f;  // world Y at which enemies start spawning
   float lastSpawnY = 0.0f;   // world Y of last (most-up) spawn
-  float spawnInterval = 400.0f;
+  float spawnInterval = EnemyConfig::SPAWN_INTERVAL;
   float spawnAhead =
       0.0f;  // how far ahead of player (in world Y) to place new enemies
+
+  // pointer to platform manager to spawn enemies on platforms
+  class PlatformManager* platformManager = nullptr;
+  EnemyFactory enemyFactory;
 
   void spawnEnemy(float y);
 };

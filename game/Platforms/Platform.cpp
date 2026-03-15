@@ -14,7 +14,7 @@ void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {
   this->y = y;
   sprite = spr;
   type = t;
-  setSpriteSize(sprite, this->w, this->h);
+  if (sprite) setSpriteSize(sprite, this->w, this->h);
 }
 
 bool IPlatform::isColliding(const Player& player) const {

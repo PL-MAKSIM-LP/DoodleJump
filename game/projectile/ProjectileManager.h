@@ -4,6 +4,7 @@
 
 #include "../../framework/Framework.h"
 #include "../Camera.h"
+#include "../Constants.h"
 #include "Projectile.h"
 
 class ProjectileManager {
@@ -15,7 +16,8 @@ class ProjectileManager {
   void update(float dt, const Camera& camera);
   void render(const Camera& camera);
 
-  void shoot(float x, float y, float velX = 0.0f, float velY = -600.0f);
+  void shoot(float x, float y, float velX = 0.0f,
+             float velY = ProjectileConfig::DEFAULT_VELY);
 
   std::vector<Projectile>& getProjectiles() { return projectiles; }
 

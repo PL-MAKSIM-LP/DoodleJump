@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../Camera.h"
+#include "../Constants.h"
 #include "../Player.h"
 #include "Platform.h"
 #include "PlatformFactory.h"
@@ -23,15 +24,19 @@ class PlatformManager {
 
   PlatformType selectPlatformType(float y);
 
+  const std::vector<std::unique_ptr<IPlatform>>& getPlatforms() const {
+    return platforms;
+  }
+
  private:
   int screenWidth = 0;
   int screenHeight = 0;
 
   // spawn density: ~3 platforms per 100px -> gap ~33px
-  float spawnGapY = 100.0f;  // base gap (used only as fallback)
+  float spawnGapY = PlatformManagerConfig::SPAWN_GAP_Y;  // base gap (fallback)
   float lastSpawnY = 0.0f;
   // limit active platforms to a reasonable number
-  int maxActive = 80;
+  int maxActive = PlatformManagerConfig::MAX_ACTIVE;
 
   // compute adaptive gap based on Y (higher -> larger gap)
   float computeSpawnGap(float y) const;
@@ -42,7 +47,10 @@ class PlatformManager {
   PlatformFactory factory;
 
   std::vector<std::unique_ptr<IPlatform>> platforms;
-  float easyThreshold = static_cast<float>(screenHeight) - 500.0f;
-  float mediumThreshold = static_cast<float>(screenHeight) - 2000.0f;
-  float hardThreshold = static_cast<float>(screenHeight) - 4000.0f;
+  float easyThreshold =
+      static_cast<float>(screenHeight) - PlatformManagerConfig::EASY_OFFSET;
+  float mediumThreshold =
+      static_cast<float>(screenHeight) - PlatformManagerConfig::MEDIUM_OFFSET;
+  float hardThreshold =
+      static_cast<float>(screenHeight) - PlatformManagerConfig::HARD_OFFSET;
 };

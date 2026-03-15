@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "../Constants.h"
+
 void BreakablePlatform::update(float dt, int screenWidth) {
   if (broken && !falling) {
     // progress breaking animation
@@ -28,8 +30,9 @@ void BreakablePlatform::update(float dt, int screenWidth) {
   }
 
   if (falling) {
-    y += 200.0f * dt;
-    if (y > screenWidth + 1000) active = false;
+    y += BreakablePlatformConfig::FALL_SPEED * dt;
+    if (y > screenWidth + BreakablePlatformConfig::OFFSCREEN_PADDING)
+      active = false;
   }
 }
 

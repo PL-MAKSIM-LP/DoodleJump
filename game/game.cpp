@@ -9,6 +9,7 @@
 #include "Commands/MoveLeftCommand.h"
 #include "Commands/MoveRightCommand.h"
 #include "Commands/ShootCommand.h"
+#include "Constants.h"
 #include "Enemy/EnemyManager.h"
 #include "GameState.h"
 #include "Platforms/Platform.h"
@@ -18,8 +19,8 @@
 #include "projectile/ProjectileManager.h"
 
 class MyFramework : public Framework {
-  int screenWidth = 390;
-  int screenHeight = 844;
+  int screenWidth = GameConfig::DEFAULT_WIDTH;
+  int screenHeight = GameConfig::DEFAULT_HEIGHT;
 
   GameState state = GameState::MENU;
   PlatformManager platformManager;
@@ -48,7 +49,7 @@ class MyFramework : public Framework {
 
   virtual bool Init() {
     background = createSprite("../data/jungle-bck@2x.png");
-    setSpriteSize(background, screenWidth, screenHeight);
+    if (background) setSpriteSize(background, screenWidth, screenHeight);
     player.init(screenWidth, screenHeight);
 
     inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
@@ -57,6 +58,7 @@ class MyFramework : public Framework {
                                            &projectileManager, &enemyManager));
     platformManager.init(screenWidth, screenHeight);
     enemyManager.init(screenWidth, screenHeight);
+    enemyManager.setPlatformManager(&platformManager);
     projectileManager.init();
 
     player.jump();
@@ -64,7 +66,9 @@ class MyFramework : public Framework {
     return true;
   }
 
-  virtual void Close() { destroySprite(background); }
+  virtual void Close() {
+    if (background) destroySprite(background);
+  }
 
   virtual bool Tick() {
     unsigned int now = getTickCount();
@@ -117,7 +121,7 @@ class MyFramework : public Framework {
 };
 
 int main(int argc, char* argv[]) {
-  int w = 390, h = 844;
+  int w = GameConfig::DEFAULT_WIDTH, h = GameConfig::DEFAULT_HEIGHT;
   if (argc == 3) {
     try {
       w = std::stoi(argv[1]);
@@ -125,17 +129,18 @@ int main(int argc, char* argv[]) {
     } catch (const std::exception& e) {
       std::cout << "Invalid arguments, using defaults: " << e.what()
                 << std::endl;
-      w = 390;
-      h = 844;
+      w = GameConfig::DEFAULT_WIDTH;
+      h = GameConfig::DEFAULT_HEIGHT;
     }
   }
 
-  if (w < 0 || w > 1920 || h < 0 || h > 1080) {
+  if (w < 0 || w > GameConfig::MAX_WIDTH || h < 0 ||
+      h > GameConfig::MAX_HEIGHT) {
     std::cout << "Invalid arguments, using defaults: width and height should "
                  "be between 0 and 2000"
               << std::endl;
-    w = 390;
-    h = 844;
+    w = GameConfig::DEFAULT_WIDTH;
+    h = GameConfig::DEFAULT_HEIGHT;
   }
 
   return run(new MyFramework(w, h));

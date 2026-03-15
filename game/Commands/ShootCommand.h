@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "../Constants.h"
 #include "../Enemy/EnemyManager.h"
 #include "../projectile/ProjectileManager.h"
 #include "ICommand.h"
@@ -12,31 +13,33 @@ class ShootCommand : public ICommand {
       : mgr(mgr), emgr(emgr) {}
   virtual void execute(Player& player) override {
     if (!mgr) return;
-    float sx = player.x + player.width / 2.0f - 5.0f;
+    float sx = player.x + player.width / 2.0f - (ProjectileConfig::W / 2.0f);
     float sy = player.y;
 
     // find nearest enemy on screen (relative to player)
-    Enemy* target = nullptr;
+    IEnemy* target = nullptr;
     float bestDist = 1e9f;
-    for (auto& e : emgr->getEnemies()) {
+    for (auto& up : emgr->getEnemies()) {
+      auto& e = up;
+      if (!e || !e->isAlive()) continue;
       // consider enemy "on screen" if within player's screenHeight
-      if (std::fabs(e.y - player.y) > player.screenHeight) continue;
-      float ex = e.x + e.w / 2.0f;
-      float ey = e.y + e.h / 2.0f;
+      if (std::fabs(e->getY() - player.y) > player.screenHeight) continue;
+      float ex = e->getX() + e->getW() / 2.0f;
+      float ey = e->getY() + e->getH() / 2.0f;
       float dx = ex - sx;
       float dy = ey - sy;
       float d2 = dx * dx + dy * dy;
       if (d2 < bestDist) {
         bestDist = d2;
-        target = &e;
+        target = e.get();
       }
     }
 
-    float speed = 700.0f;
+    float speed = ProjectileConfig::SHOOT_SPEED;
     float vx = 0.0f, vy = -speed;
     if (target) {
-      float ex = target->x + target->w / 2.0f;
-      float ey = target->y + target->h / 2.0f;
+      float ex = target->getX() + target->getW() / 2.0f;
+      float ey = target->getY() + target->getH() / 2.0f;
       float dx = ex - sx;
       float dy = ey - sy;
       float len = std::sqrt(dx * dx + dy * dy);

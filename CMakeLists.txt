@@ -15,7 +15,9 @@ add_executable(DoodleJump
     game/Platforms/MovingPlatformVertical.cpp
     game/Platforms/MovingPlatformHorizontal.cpp
     game/Platforms/BreakablePlatform.cpp
-    game/Enemy/Enemy.cpp
+    game/Enemy/EnemyFactory.cpp
+    game/Enemy/GroundedEnemy.cpp
+    game/Enemy/FlyingEnemy.cpp
     game/Enemy/EnemyManager.cpp
     game/projectile/Projectile.cpp
     game/projectile/ProjectileManager.cpp

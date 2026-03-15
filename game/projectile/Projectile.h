@@ -2,13 +2,14 @@
 
 #include "../../framework/Framework.h"
 #include "../Camera.h"
+#include "../Constants.h"
 
 class Projectile {
  public:
   float x = 0.0f;
   float y = 0.0f;
-  int w = 10;
-  int h = 20;
+  int w = ProjectileConfig::W;
+  int h = ProjectileConfig::H;
 
   bool active = true;
 
@@ -22,5 +23,5 @@ class Projectile {
 
  public:
   float velX = 0.0f;
-  float velY = -600.0f;  // default moves upward
+  float velY = ProjectileConfig::DEFAULT_VELY;  // default moves upward
 };

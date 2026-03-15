@@ -1,7 +1,10 @@
+
 #include "ProjectileManager.h"
 
 #include <algorithm>
 #include <iostream>
+
+#include "../Constants.h"
 
 ProjectileManager::ProjectileManager() {}
 
@@ -12,7 +15,7 @@ void ProjectileManager::init() {
   if (!sprite) {
     sprite = createSprite("../data/01-Breakout-Tiles.png");
   }
-  if (sprite) setSpriteSize(sprite, 10, 20);
+  if (sprite) setSpriteSize(sprite, ProjectileConfig::W, ProjectileConfig::H);
 }
 
 void ProjectileManager::update(float dt, const Camera &camera) {
@@ -23,15 +26,18 @@ void ProjectileManager::update(float dt, const Camera &camera) {
   int sw = 0, sh = 0;
   getScreenSize(sw, sh);
 
-  projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
-                                   [&](const Projectile &p) {
-                                     if (!p.active) return true;
-                                     float screenY = camera.toScreenY(p.y);
-                                     if (screenY < -200.0f) return true;
-                                     if (screenY > sh + 200.0f) return true;
-                                     return false;
-                                   }),
-                    projectiles.end());
+  projectiles.erase(
+      std::remove_if(projectiles.begin(), projectiles.end(),
+                     [&](const Projectile &p) {
+                       if (!p.active) return true;
+                       float screenY = camera.toScreenY(p.y);
+                       if (screenY < -ProjectileConfig::OFFSCREEN_PADDING)
+                         return true;
+                       if (screenY > sh + ProjectileConfig::OFFSCREEN_PADDING)
+                         return true;
+                       return false;
+                     }),
+      projectiles.end());
 }
 
 void ProjectileManager::render(const Camera &camera) {

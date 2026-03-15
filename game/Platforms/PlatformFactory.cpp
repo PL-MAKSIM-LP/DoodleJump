@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 
+#include "../Constants.h"
 #include "BreakablePlatform.h"
 #include "MovingPlatformHorizontal.h"
 #include "MovingPlatformVertical.h"
@@ -27,10 +28,7 @@ std::unique_ptr<IPlatform> PlatformFactory::create(int x, int y,
   }
 
   Sprite* spr = createSprite(path);
-  setSpriteSize(spr, 70, 18);
-
-  std::cout << "_______" << std::endl;
-  std::cout << static_cast<int>(x) << " " << static_cast<int>(y) << std::endl;
+  if (spr) setSpriteSize(spr, PlatformConfig::WIDTH, PlatformConfig::HEIGHT);
 
   switch (type) {
     case PlatformType::NORMAL: {

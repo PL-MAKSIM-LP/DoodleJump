@@ -3,6 +3,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "../Constants.h"
+
 void MovingPlatformHorizontal::update(float dt, int screenWidth) {
   x += moveDir * moveSpeed * dt;
   if (x <= minX) {
@@ -16,6 +18,6 @@ void MovingPlatformHorizontal::update(float dt, int screenWidth) {
 
 void MovingPlatformHorizontal::setMovement() {
   std::cout << x << " " << y << std::endl;
-  minX = x - 50.0f;
-  maxX = x + 50.0f;
+  minX = x - MovingPlatformConfig::SWING;
+  maxX = x + MovingPlatformConfig::SWING;
 }

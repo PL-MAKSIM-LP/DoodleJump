@@ -2,6 +2,7 @@
 
 #include "../../framework/Framework.h"
 #include "../Camera.h"
+#include "../Constants.h"
 #include "../Player.h"
 
 enum class PlatformType {
@@ -15,8 +16,8 @@ class IPlatform {
  public:
   float x = 0.0f;
   float y = 0.0f;
-  int w = 70;
-  int h = 18;
+  int w = PlatformConfig::WIDTH;
+  int h = PlatformConfig::HEIGHT;
   Sprite* sprite = nullptr;
 
   PlatformType type;

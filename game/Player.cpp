@@ -21,8 +21,8 @@ void Player::init(int screenWidth, int screenHeight) {
   spriteRight = createSprite("../data/lik-right.png");
   lastSprite = spriteLeft;
 
-  setSpriteSize(spriteLeft, width, height);
-  setSpriteSize(spriteRight, width, height);
+  if (spriteLeft) setSpriteSize(spriteLeft, width, height);
+  if (spriteRight) setSpriteSize(spriteRight, width, height);
 
   x = (screenWidth / 2) - (width / 2);
   y = screenHeight - height;
@@ -54,8 +54,6 @@ void Player::update(float dt, int screenWidth) {
   } else if (x < 0 - width / 2) {
     x = screenWidth - width / 2;
   }
-
-  // std::cout << "Player position: (" << x << ", " << y << ")" << std::endl;
 }
 
 void Player::render(const Camera& camera) {

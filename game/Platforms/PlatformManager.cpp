@@ -12,10 +12,11 @@ PlatformManager::~PlatformManager() { clear(); }
 void PlatformManager::init(int screenWidth_, int screenHeight_) {
   screenWidth = screenWidth_;
   screenHeight = screenHeight_;
-  xDist = std::uniform_int_distribution<int>(0, std::max(0, screenWidth - 70));
+  xDist = std::uniform_int_distribution<int>(
+      0, std::max(0, screenWidth - PlatformConfig::WIDTH));
 
-  float y = screenHeight - 100.0f;
-  int x = 100;
+  float y = screenHeight - PlatformManagerConfig::SPAWN_GAP_Y;
+  int x = PlatformManagerConfig::INITIAL_SPAWN_X;
   spawn(static_cast<float>(x), y, PlatformType::NORMAL);
 
   lastSpawnY = y;
@@ -26,7 +27,8 @@ void PlatformManager::update(float dt, Player& player) {
     if (p->active) p->update(dt, screenWidth);
   }
 
-  float removeY = player.y + screenHeight + 200.0f;
+  float removeY =
+      player.y + screenHeight + EnemyPlacementConfig::REMOVE_SCREEN_PADDING;
   platforms.erase(std::remove_if(platforms.begin(), platforms.end(),
                                  [&](const std::unique_ptr<IPlatform>& p) {
                                    if (!p->active) return true;
@@ -58,9 +60,9 @@ float PlatformManager::computeSpawnGap(float y) const {
   // y decreases as player goes up. Use thresholds to interpolate gap.
   // At low altitude: smaller gap (more platforms). At high altitude: larger
   // gap.
-  float lowGap = 80.0f;  // ~1.25 platforms / 100px
-  float midGap = 110.0f;
-  float highGap = 150.0f;  // ~2 platforms / 300px
+  float lowGap = PlatformManagerConfig::LOW_GAP;  // ~1.25 platforms / 100px
+  float midGap = PlatformManagerConfig::MID_GAP;
+  float highGap = PlatformManagerConfig::HIGH_GAP;  // ~2 platforms / 300px
 
   if (y > easyThreshold) {
     return lowGap;
@@ -72,21 +74,29 @@ float PlatformManager::computeSpawnGap(float y) const {
 }
 
 PlatformType PlatformManager::selectPlatformType(float y) {
-  float r = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+  float r = std::uniform_real_distribution<float>(
+      PlatformManagerConfig::RAND_R_MIN,
+      PlatformManagerConfig::RAND_R_MAX)(gen);
 
   if (y > easyThreshold) {
     return PlatformType::NORMAL;
   } else if (y > mediumThreshold) {
-    if (r < 0.80f) return PlatformType::NORMAL;
+    if (r < PlatformManagerConfig::PROB_MEDIUM_NORMAL)
+      return PlatformType::NORMAL;
     return PlatformType::MOVING_HORIZONTAL;
   } else if (y > hardThreshold) {
-    if (r < 0.60f) return PlatformType::NORMAL;
-    if (r < 0.90f) return PlatformType::MOVING_HORIZONTAL;
+    if (r < PlatformManagerConfig::PROB_VERYHIGH_NORMAL)
+      return PlatformType::NORMAL;
+    if (r < PlatformManagerConfig::PROB_VERYHIGH_MOVINGH)
+      return PlatformType::MOVING_HORIZONTAL;
     return PlatformType::BREAKABLE;
   } else {
-    if (r < 0.40f) return PlatformType::NORMAL;
-    if (r < 0.75f) return PlatformType::MOVING_HORIZONTAL;
-    if (r < 0.90f) return PlatformType::MOVING_VERTICAL;
+    if (r < PlatformManagerConfig::PROB_HIGHEST_NORMAL)
+      return PlatformType::NORMAL;
+    if (r < PlatformManagerConfig::PROB_HIGHEST_MOVINGH)
+      return PlatformType::MOVING_HORIZONTAL;
+    if (r < PlatformManagerConfig::PROB_HIGHEST_MOVINGV)
+      return PlatformType::MOVING_VERTICAL;
     return PlatformType::BREAKABLE;
   }
 }
