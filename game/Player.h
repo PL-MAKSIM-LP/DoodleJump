@@ -12,7 +12,11 @@ class Player {
   int width = 50;
   int height = 60;
 
+  int screenHeight = 200;
+
   static constexpr float MOVE_SPEED = 250.0f;
+  static constexpr float JUMP_FORCE = 600.0f;
+  static constexpr float GRAVITY = 500.0f;
 
   bool alive = true;
 

@@ -9,12 +9,17 @@ add_executable(DoodleJump
     game/game.cpp
     game/Camera.cpp
     game/Player.cpp
-    game/Platform.cpp
-    game/PlatformManager.cpp
-    game/Enemy.cpp
-    game/EnemyManager.cpp
+    game/Platforms/Platform.cpp
+    game/Platforms/PlatformFactory.cpp
+    game/Platforms/NormalPlatform.cpp
+    game/Platforms/MovingPlatformVertical.cpp
+    game/Platforms/MovingPlatformHorizontal.cpp
+    game/Platforms/BreakablePlatform.cpp
+    game/Enemy/Enemy.cpp
+    game/Enemy/EnemyManager.cpp
     game/Projectile.cpp
     game/ProjectileManager.cpp
+    game/Platforms/PlatformManager.cpp
     game/ScoreDisplay.cpp
     game/Commands/InputHandler.cpp
 )
