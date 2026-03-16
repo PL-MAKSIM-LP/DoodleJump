@@ -8,6 +8,7 @@
 #include "../Commands/SpawnTrampolineCommand.h"
 #include "../Enemy/EnemyManager.h"
 #include "../GameData/GameData.h"
+#include "../Platforms/BreakablePlatform.h"
 
 GameEngine::GameEngine(int width, int height)
     : screenWidth(width), screenHeight(height) {}
@@ -15,6 +16,9 @@ GameEngine::GameEngine(int width, int height)
 GameEngine::~GameEngine() {}
 
 void GameEngine::init() {
+  // Инициализируем кэши спрайтов анимаций
+  BreakablePlatform::initializeAnimationCache();
+
   // Инициализируем input команды
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
@@ -56,6 +60,16 @@ void GameEngine::resetGame() {
   scoreDisplay = ScoreDisplay();
   scoreDisplay.init();
   GameData::resetCoins();
+
+  // ИСПРАВКА: перевсоздаём команды с актуальными указателями на менеджеры
+  inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
+  inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
+  inputHandler.setMouseCommand(
+      FRMouseButton::LEFT,
+      std::make_unique<ShootCommand>(&projectileManager, &enemyManager));
+  inputHandler.setMouseCommand(
+      FRMouseButton::RIGHT,
+      std::make_unique<SpawnTrampolineCommand>(&bonusManager));
 
   state = GameState::PLAYING;
 }

@@ -35,6 +35,14 @@ std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {
     }
     auto enemy = std::make_unique<GroundedEnemy>();
     enemy->init(x, y, groundSprite, type);
+
+    // Пример анимации: используем один спрайт несколько раз (для теста)
+    // В реальной игре загружали бы разные спрайты: enemyWalk1.png,
+    // enemyWalk2.png
+    std::vector<Sprite*> walkFrames = {groundSprite, groundSprite,
+                                       groundSprite};
+    enemy->setWalkFrames(walkFrames, 0.15f);  // 3 кадра, 150ms между ними
+
     return enemy;
   }
 }

@@ -19,14 +19,14 @@ constexpr int HEIGHT = 18;
 }  // namespace PlatformConfig
 
 namespace PlatformManagerConfig {
-constexpr float SPAWN_GAP_Y = 100.0f;  // base gap fallback
-constexpr int MAX_ACTIVE = 80;
+constexpr float SPAWN_GAP_Y = 80.0f;  // base gap fallback
+constexpr int MAX_ACTIVE = 20;
 constexpr float EASY_OFFSET = 500.0f;
 constexpr float MEDIUM_OFFSET = 2000.0f;
 constexpr float HARD_OFFSET = 4000.0f;
-constexpr float LOW_GAP = 80.0f;
-constexpr float MID_GAP = 110.0f;
-constexpr float HIGH_GAP = 150.0f;
+constexpr float LOW_GAP = 50.0f;
+constexpr float MID_GAP = 80.0f;
+constexpr float HIGH_GAP = 100.0f;
 constexpr float RAND_R_MIN = 0.0f;
 constexpr float RAND_R_MAX = 1.0f;
 // initial spawn X
@@ -55,13 +55,13 @@ constexpr float OFFSCREEN_PADDING = 1000.0f;
 // ========== ENEMY CONFIG ==========
 namespace EnemyConfig {
 // Spawning
-constexpr float SPAWN_INTERVAL = 400.0f;  // world-space distance between spawns
+constexpr float SPAWN_INTERVAL = 150.0f;  // world-space distance between spawns
 constexpr float SPAWN_START_OFFSET =
     2000.0f;  // start spawning when playerY <= screenHeight - OFFSET
 constexpr float SPAWN_AHEAD_EXTRA =
     200.0f;  // place spawned enemies this far above player
 constexpr int INITIAL_BATCH =
-    3;  // initial number of enemies to spawn when enabling
+    5;  // initial number of enemies to spawn when enabling
 
 // Placement and removal
 constexpr float REMOVE_SCREEN_PADDING =

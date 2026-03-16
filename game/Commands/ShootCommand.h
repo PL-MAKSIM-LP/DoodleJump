@@ -12,7 +12,7 @@ class ShootCommand : public ICommand {
   explicit ShootCommand(ProjectileManager* mgr, EnemyManager* emgr)
       : mgr(mgr), emgr(emgr) {}
   virtual void execute(Player& player) override {
-    if (!mgr) return;
+    if (!mgr || !emgr) return;  // ИСПРАВКА: проверка emgr
     float sx = player.x + player.width / 2.0f - (ProjectileConfig::W / 2.0f);
     float sy = player.y;
 
