@@ -12,6 +12,7 @@ namespace CameraConfig {
 constexpr float DESIRED_SCREEN_Y_FRAC = 0.40f;
 }
 
+// ========== PLATFORM CONFIG ==========
 namespace PlatformConfig {
 constexpr int WIDTH = 70;
 constexpr int HEIGHT = 18;
@@ -51,12 +52,32 @@ constexpr float FALL_SPEED = 200.0f;
 constexpr float OFFSCREEN_PADDING = 1000.0f;
 }  // namespace BreakablePlatformConfig
 
-namespace EnemyPlacementConfig {
-constexpr float REMOVE_SCREEN_PADDING = 200.0f;
-constexpr int X_MARGIN = 50;
-constexpr float PLATFORM_TOLERANCE = 40.0f;
-}  // namespace EnemyPlacementConfig
+// ========== ENEMY CONFIG ==========
+namespace EnemyConfig {
+// Spawning
+constexpr float SPAWN_INTERVAL = 400.0f;  // world-space distance between spawns
+constexpr float SPAWN_START_OFFSET =
+    2000.0f;  // start spawning when playerY <= screenHeight - OFFSET
+constexpr float SPAWN_AHEAD_EXTRA =
+    200.0f;  // place spawned enemies this far above player
+constexpr int INITIAL_BATCH =
+    3;  // initial number of enemies to spawn when enabling
 
+// Placement and removal
+constexpr float REMOVE_SCREEN_PADDING =
+    200.0f;                   // how far past screen before removing enemy
+constexpr int X_MARGIN = 50;  // margin used when sampling random X positions
+constexpr float PLATFORM_TOLERANCE =
+    40.0f;  // tolerance when matching platform Y for grounded spawn
+
+// Visual sizes
+constexpr int GROUND_W = 50;
+constexpr int GROUND_H = 40;
+constexpr int FLY_W = 40;
+constexpr int FLY_H = 30;
+}  // namespace EnemyConfig
+
+// ========== PROJECTILE CONFIG ==========
 namespace ProjectileConfig {
 constexpr int W = 10;
 constexpr int H = 20;
@@ -65,13 +86,37 @@ constexpr float SHOOT_SPEED = 700.0f;
 constexpr float OFFSCREEN_PADDING = 200.0f;
 }  // namespace ProjectileConfig
 
+// ========== BONUS CONFIG ==========
+namespace BonusConfig {
+// Spawn
+constexpr float SPAWN_INTERVAL = 500.0f;
+constexpr float SPAWN_START_OFFSET = 1200.0f;
+constexpr float SPAWN_AHEAD_EXTRA = 200.0f;
+constexpr int INITIAL_BATCH = 2;
+
+// Removal
+constexpr float REMOVE_SCREEN_PADDING = 200.0f;
+
+// Coin config
+constexpr int COIN_VALUE = 10;
+constexpr int COIN_W = 24;
+constexpr int COIN_H = 24;
+
+// Trampoline config
+constexpr int TRAMPOLINE_VALUE = 15;
+constexpr int TRAMPOLINE_W = 70;
+constexpr int TRAMPOLINE_H = 20;
+constexpr float TRAMPOLINE_PROBABILITY = 0.20f;
+constexpr float TRAMPOLINE_BOOST_MULT = 1.7f;
+constexpr int TRAMPOLINE_LIFE_TIME = 5000;  // milliseconds
+
+// Misc
+constexpr float COIN_PLATFORM_OFFSET = 18.0f;
+}  // namespace BonusConfig
+
+// ========== COINS & CURRENCY CONFIG ==========
 namespace CoinsConfig {
 constexpr int COIN_VALUE = 10;
 constexpr int START_VALUE = 50;
 constexpr int TRAMPOLINE_VALUE = 15;
 }  // namespace CoinsConfig
-
-namespace TrampolineConfig {
-constexpr int TRAMPOLINE_VALUE = 15;
-constexpr int TRAMPOLINE_LIFE_TIME = 30000;
-}  // namespace TrampolineConfig

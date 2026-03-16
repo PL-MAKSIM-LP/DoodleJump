@@ -57,3 +57,5 @@ void ProjectileManager::shoot(float x, float y, float velX, float velY) {
   std::cout << "shoot: " << x << "," << y << " vel=" << velX << "," << velY
             << std::endl;
 }
+
+void ProjectileManager::clear() { projectiles.clear(); }

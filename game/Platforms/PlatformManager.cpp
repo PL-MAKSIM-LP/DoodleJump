@@ -27,8 +27,7 @@ void PlatformManager::update(float dt, Player& player) {
     if (p->active) p->update(dt, screenWidth);
   }
 
-  float removeY =
-      player.y + screenHeight + EnemyPlacementConfig::REMOVE_SCREEN_PADDING;
+  float removeY = player.y + screenHeight + EnemyConfig::REMOVE_SCREEN_PADDING;
   platforms.erase(std::remove_if(platforms.begin(), platforms.end(),
                                  [&](const std::unique_ptr<IPlatform>& p) {
                                    if (!p->active) return true;

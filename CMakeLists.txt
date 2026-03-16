@@ -9,6 +9,7 @@ include_directories(framework/inc)
 
 add_executable(DoodleJump
     game/game.cpp
+    game/core/GameEngine.cpp
     game/Camera.cpp
     game/Player.cpp
     game/Platforms/Platform.cpp

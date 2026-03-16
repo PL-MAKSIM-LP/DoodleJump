@@ -14,6 +14,8 @@ class BonusManager {
 
   void update(int screenWidth, int screenHeight, const Camera& camera,
               float playerY);
+  void render(const Camera& camera);
+  void clear();  // Очистить все бонусы
 
   bool spawnedTrampoline = false;
 

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "BonusConfig.h"
+#include "../Constants.h"
 #include "CoinBonus.h"
 #include "Trampoline.h"
 

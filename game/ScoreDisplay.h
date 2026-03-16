@@ -1,13 +1,23 @@
 #pragma once
 
+#include "../framework/Framework.h"
+
 class ScoreDisplay {
-public:
-    void setScore(int s) { score = s; }
-    int  getScore() const { return score; }
+ public:
+  ScoreDisplay() = default;
+  ~ScoreDisplay();
 
-    // TODO: render digit sprites once a suitable spritesheet is identified
-    void render() {}
+  void init();
+  void setScore(int s) { score = s; }
+  int getScore() const { return score; }
 
-private:
-    int score = 0;
+  // Отображение счета монет в левом верхнем углу
+  void render();
+
+ private:
+  int score = 0;
+  Sprite* digitSprites[10] = {};  // Спрайты для цифр 0-9
+
+  void renderDigit(int digit, int x, int y);
+  void renderNumber(int number, int x, int y);
 };

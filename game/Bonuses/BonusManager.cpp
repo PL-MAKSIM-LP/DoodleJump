@@ -5,7 +5,6 @@
 
 #include "../../framework/Framework.h"
 #include "../Constants.h"
-#include "BonusConfig.h"
 
 void BonusManager::update(int screenWidth, int screenHeight,
                           const Camera& camera, float playerY) {
@@ -34,7 +33,7 @@ void BonusManager::update(int screenWidth, int screenHeight,
     }
 
     if (getTickCount() >=
-        timeSinceLastTrampoline + TrampolineConfig::TRAMPOLINE_LIFE_TIME) {
+        timeSinceLastTrampoline + BonusConfig::TRAMPOLINE_LIFE_TIME) {
       spawnedTrampoline = false;
       trampoline.reset();  // Удаляем трамплин сразу
     }
@@ -59,4 +58,20 @@ void BonusManager::spawnTrampoline(int x, int y) {
   if (trampoline) {
     this->trampoline = std::move(trampoline);
   }
+}
+
+void BonusManager::render(const Camera& camera) {
+  for (auto& coin : coins) {
+    coin->render(camera);
+  }
+  if (trampoline) {
+    trampoline->render(camera);
+  }
+}
+
+void BonusManager::clear() {
+  coins.clear();
+  trampoline.reset();
+  spawnedTrampoline = false;
+  timeSinceLastTrampoline = 0;
 }

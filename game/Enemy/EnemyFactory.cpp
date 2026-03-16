@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "../../framework/Framework.h"
-#include "EnemyConfig.h"
+#include "../Constants.h"
 #include "FlyingEnemy.h"
 #include "GroundedEnemy.h"
 

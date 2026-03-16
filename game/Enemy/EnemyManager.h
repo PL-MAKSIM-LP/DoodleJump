@@ -8,6 +8,8 @@
 #include "EnemyFactory.h"
 #include "IEnemy.h"
 
+enum class EnemyCollision { NOTHING, STOMP, HIT };
+
 class EnemyManager {
  public:
   EnemyManager() = default;
@@ -18,10 +20,11 @@ class EnemyManager {
   // enemies)
   void update(float dt, int screenWidth, const Camera& camera, float playerY);
   void render(const Camera& camera);
+  void clear();  // Очистить всех врагов
 
   // Returns true if player was hit by an enemy
-  bool checkPlayerCollision(const Player& player);
-
+  EnemyCollision checkPlayerCollision(const Player& player);
+  virtual void onCollide(Player& player) { player.jump(); };
   // Marks enemy as dead if hit by a projectile AABB
   bool checkProjectileCollision(float px, float py, float pw, float ph);
 

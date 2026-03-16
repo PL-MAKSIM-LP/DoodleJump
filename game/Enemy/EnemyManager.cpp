@@ -74,16 +74,25 @@ void EnemyManager::render(const Camera &camera) {
   }
 }
 
-bool EnemyManager::checkPlayerCollision(const Player &player) {
+EnemyCollision EnemyManager::checkPlayerCollision(const Player &player) {
   for (auto &e : enemies) {
     if (!e->isAlive()) continue;
+    auto collisionResult = EnemyCollision::NOTHING;
     bool coll = !(player.x + player.width <= e->getX() ||
                   player.x >= e->getX() + e->getW() ||
                   player.y + player.height <= e->getY() ||
                   player.y >= e->getY() + e->getH());
-    if (coll) return true;
+    if (coll) {
+      collisionResult = EnemyCollision::HIT;
+      if (e->getType() == EnemyType::GROUND && player.velY < 0) {
+        collisionResult = EnemyCollision::STOMP;
+        e->setAlive(false);
+      }
+      return collisionResult;
+    }
   }
-  return false;
+
+  return EnemyCollision::NOTHING;
 }
 
 bool EnemyManager::checkProjectileCollision(float px, float py, float pw,
@@ -126,4 +135,10 @@ void EnemyManager::spawnEnemy(float y) {
   int x = xDist(gen);
   auto e = enemyFactory.create(x, static_cast<int>(y), EnemyType::FLYING);
   enemies.push_back(std::move(e));
+}
+
+void EnemyManager::clear() {
+  enemies.clear();
+  spawnEnabled = false;
+  lastSpawnY = static_cast<float>(screenHeight);
 }

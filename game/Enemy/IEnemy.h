@@ -2,7 +2,7 @@
 
 #include "../../framework/Framework.h"
 #include "../Camera.h"
-#include "EnemyConfig.h"
+#include "../Constants.h"
 
 enum class EnemyType { GROUND, FLYING };
 
@@ -39,6 +39,7 @@ class IEnemy {
   virtual float getY() const { return y; }
   virtual int getW() const { return w; }
   virtual int getH() const { return h; }
+  virtual EnemyType getType() const { return type; }
 
  protected:
   EnemyType type;
