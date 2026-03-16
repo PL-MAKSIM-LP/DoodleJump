@@ -45,7 +45,7 @@ constexpr float SWING = 50.0f;
 }  // namespace MovingPlatformConfig
 
 namespace BreakablePlatformConfig {
-constexpr int MAX_BREAK_STAGES = 4;
+constexpr int MAX_BREAK_STAGES = 3;
 constexpr float BREAK_STEP_DURATION = 0.12f;
 constexpr float FALL_SPEED = 200.0f;
 constexpr float OFFSCREEN_PADDING = 1000.0f;
@@ -64,3 +64,14 @@ constexpr float DEFAULT_VELY = -600.0f;
 constexpr float SHOOT_SPEED = 700.0f;
 constexpr float OFFSCREEN_PADDING = 200.0f;
 }  // namespace ProjectileConfig
+
+namespace CoinsConfig {
+constexpr int COIN_VALUE = 10;
+constexpr int START_VALUE = 50;
+constexpr int TRAMPOLINE_VALUE = 15;
+}  // namespace CoinsConfig
+
+namespace TrampolineConfig {
+constexpr int TRAMPOLINE_VALUE = 15;
+constexpr int TRAMPOLINE_LIFE_TIME = 30000;
+}  // namespace TrampolineConfig

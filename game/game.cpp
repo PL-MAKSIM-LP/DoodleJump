@@ -4,11 +4,13 @@
 #include <string>
 
 #include "../framework/Framework.h"
+#include "Bonuses/BonusManager.h"
 #include "Camera.h"
 #include "Commands/InputHandler.h"
 #include "Commands/MoveLeftCommand.h"
 #include "Commands/MoveRightCommand.h"
 #include "Commands/ShootCommand.h"
+#include "Commands/SpawnTrampolineCommand.h"
 #include "Constants.h"
 #include "Enemy/EnemyManager.h"
 #include "GameState.h"
@@ -24,7 +26,7 @@ class MyFramework : public Framework {
 
   GameState state = GameState::MENU;
   PlatformManager platformManager;
-
+  BonusManager bonusManager;
   Sprite* background = nullptr;
   InputHandler inputHandler;
   Camera camera;
@@ -54,8 +56,14 @@ class MyFramework : public Framework {
 
     inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
     inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
-    inputHandler.setCommand(FRKey::UP, std::make_unique<ShootCommand>(
-                                           &projectileManager, &enemyManager));
+    inputHandler.setMouseCommand(
+        FRMouseButton::LEFT,
+        std::make_unique<ShootCommand>(&projectileManager, &enemyManager));
+
+    inputHandler.setMouseCommand(
+        FRMouseButton::RIGHT,
+        std::make_unique<SpawnTrampolineCommand>(&bonusManager));
+
     platformManager.init(screenWidth, screenHeight);
     enemyManager.init(screenWidth, screenHeight);
     enemyManager.setPlatformManager(&platformManager);

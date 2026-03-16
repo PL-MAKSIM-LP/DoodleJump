@@ -1,5 +1,7 @@
 #include "CoinBonus.h"
 
+#include "../Constants.h"
+#include "../GameData/GameData.h"
 #include "BonusConfig.h"
 
 CoinBonus::CoinBonus() {
@@ -9,4 +11,6 @@ CoinBonus::CoinBonus() {
 
 void CoinBonus::update(float, int) {}
 
-void CoinBonus::applyEffect(Player&) {}
+void CoinBonus::applyEffect(Player&) {
+  GameData::addCoins(CoinsConfig::COIN_VALUE);
+}

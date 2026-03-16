@@ -6,10 +6,14 @@
 
 class InputHandler {
   std::map<FRKey, std::unique_ptr<ICommand>> keys;
+  std::map<FRMouseButton, std::unique_ptr<ICommand>> mouseButtons;
 
  public:
   void handleKeyPressed(FRKey key, Player& player);
+  void handleKeyReleased(FRKey key, Player& player);
+  void handleMousePressed(FRMouseButton button, Player& player);
+  void handleMouseReleased(FRMouseButton button, Player& player);
 
-  void handleKeyReleased(FRKey, Player&);
   void setCommand(FRKey key, std::unique_ptr<ICommand> command);
+  void setMouseCommand(FRMouseButton button, std::unique_ptr<ICommand> command);
 };

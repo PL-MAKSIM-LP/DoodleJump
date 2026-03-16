@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "../../framework/Framework.h"
+#include "../Constants.h"
 #include "BonusConfig.h"
 
 void BonusManager::update(int screenWidth, int screenHeight,
@@ -23,10 +25,19 @@ void BonusManager::update(int screenWidth, int screenHeight,
   float trampolineY = worldBottomY - BonusConfig::TRAMPOLINE_H;
   int trampolineX = (screenWidth - BonusConfig::TRAMPOLINE_W) / 2;
 
-  if (!trampoline) {
-    spawnTrampoline(trampolineX, trampolineY);
-  } else {
-    trampoline->setPosition(static_cast<float>(trampolineX), trampolineY);
+  if (spawnedTrampoline) {
+    if (!trampoline) {
+      spawnTrampoline(trampolineX, trampolineY);
+      timeSinceLastTrampoline = getTickCount();  // Запоминаем время создания
+    } else {
+      trampoline->setPosition(static_cast<float>(trampolineX), trampolineY);
+    }
+
+    if (getTickCount() >=
+        timeSinceLastTrampoline + TrampolineConfig::TRAMPOLINE_LIFE_TIME) {
+      spawnedTrampoline = false;
+      trampoline.reset();  // Удаляем трамплин сразу
+    }
   }
 
   if (coins.size() < coinCapacity) {
@@ -36,16 +47,15 @@ void BonusManager::update(int screenWidth, int screenHeight,
   }
 }
 
-void BonusManager::spawnCoin(int x, float y) {
-  auto coin = bonusFactory.create(x, static_cast<int>(y), BonusType::COIN);
+void BonusManager::spawnCoin(int x, int y) {
+  auto coin = bonusFactory.create(x, y, BonusType::COIN);
   if (coin) {
     coins.push_back(std::move(coin));
   }
 }
 
-void BonusManager::spawnTrampoline(int x, float y) {
-  auto trampoline =
-      bonusFactory.create(x, static_cast<int>(y), BonusType::TRAMPOLINE);
+void BonusManager::spawnTrampoline(int x, int y) {
+  auto trampoline = bonusFactory.create(x, y, BonusType::TRAMPOLINE);
   if (trampoline) {
     this->trampoline = std::move(trampoline);
   }

@@ -15,6 +15,8 @@ class BonusManager {
   void update(int screenWidth, int screenHeight, const Camera& camera,
               float playerY);
 
+  bool spawnedTrampoline = false;
+
  private:
   std::vector<std::unique_ptr<IBonus>> coins;
   std::unique_ptr<IBonus> trampoline;
@@ -24,8 +26,10 @@ class BonusManager {
   float lastSpawnY = 0.0f;
   bool firstSpawn = true;
 
-  void spawnCoin(int x, float y);
-  void spawnTrampoline(int x, float y);
+  unsigned int timeSinceLastTrampoline = 0;
+
+  void spawnCoin(int x, int y);
+  void spawnTrampoline(int x, int y);
 
   int coinCapacity = 5;
 };
