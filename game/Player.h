@@ -7,16 +7,16 @@ class Player {
  public:
   float x = 0.0f;
   float y = 0.0f;
+  int width = 50;
+
   float velX = 0.0f;
   float velY = 0.0f;
-  int width = 50;
   int height = 60;
-
-  int screenHeight = 200;
 
   static constexpr float MOVE_SPEED = 250.0f;
   static constexpr float JUMP_FORCE = 600.0f;
   static constexpr float GRAVITY = 500.0f;
+  int screenHeight = 200;
 
   bool alive = true;
 
@@ -31,7 +31,7 @@ class Player {
   void startMoveRight();
   void stopMoveLeft();
   void stopMoveRight();
-  void jump();
+  void jump(float scale = 1.0f);
 
  private:
   Sprite* spriteLeft = nullptr;

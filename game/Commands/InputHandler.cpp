@@ -1,3 +1,4 @@
+#pragma once
 #include "InputHandler.h"
 
 void InputHandler::setCommand(FRKey key, std::unique_ptr<ICommand> command) {

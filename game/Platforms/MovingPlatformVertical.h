@@ -9,6 +9,7 @@ class MovingPlatformVertical : public IPlatform {
   void setMovement();
   void update(float dt, int screenWidth) override;
 
+ private:
   float moveSpeed = 10.0f;
   float moveDir = 1.0f;
   float minY = 0.0f;

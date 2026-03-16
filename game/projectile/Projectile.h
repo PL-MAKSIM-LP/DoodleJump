@@ -8,8 +8,6 @@ class Projectile {
  public:
   float x = 0.0f;
   float y = 0.0f;
-  int w = ProjectileConfig::W;
-  int h = ProjectileConfig::H;
 
   bool active = true;
 
@@ -24,4 +22,8 @@ class Projectile {
  public:
   float velX = 0.0f;
   float velY = ProjectileConfig::DEFAULT_VELY;  // default moves upward
+
+ private:
+  int w = ProjectileConfig::W;
+  int h = ProjectileConfig::H;
 };

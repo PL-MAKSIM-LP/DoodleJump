@@ -1,9 +1,10 @@
 #pragma once
 
 class Camera {
-public:
-    float offsetY = 0.0f;
+ public:
+  void update(float playerY, int screenHeight);
+  float toScreenY(float worldY) const;
 
-    void update(float playerY, int screenHeight);
-    float toScreenY(float worldY) const;
+ private:
+  float offsetY = 0.0f;
 };

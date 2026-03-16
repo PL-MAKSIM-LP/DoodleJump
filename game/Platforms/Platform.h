@@ -17,8 +17,6 @@ class IPlatform {
   float x = 0.0f;
   float y = 0.0f;
   int w = PlatformConfig::WIDTH;
-  int h = PlatformConfig::HEIGHT;
-  Sprite* sprite = nullptr;
 
   PlatformType type;
   bool active = true;
@@ -39,4 +37,8 @@ class IPlatform {
   virtual ~IPlatform() {
     if (sprite) destroySprite(sprite);
   }
+
+ protected:
+  int h = PlatformConfig::HEIGHT;
+  Sprite* sprite = nullptr;
 };

@@ -33,11 +33,10 @@ void Player::update(float dt, int screenWidth) {
   velY += GRAVITY * dt;
   y += velY * dt;
 
-  if (y > screenHeight - height + 10) {
+  if (y > screenHeight - height + 5) {
     alive = false;
-    jump();
+    // jump();
   }
-
   velX = 0;
   if (movingLeft) {
     velX -= MOVE_SPEED;
@@ -46,6 +45,10 @@ void Player::update(float dt, int screenWidth) {
   if (movingRight) {
     velX += MOVE_SPEED;
     lastSprite = spriteRight;
+  }
+
+  if (x >= screenWidth / 2) {
+    velX *= 1.5f;
   }
 
   x += velX * dt;
@@ -67,7 +70,7 @@ void Player::render(const Camera& camera) {
   }
 }
 
-void Player::jump() { velY = -JUMP_FORCE; }
+void Player::jump(float scale) { velY = -JUMP_FORCE * scale; }
 
 void Player::startMoveLeft() { movingLeft = true; };
 void Player::stopMoveLeft() { movingLeft = false; };
