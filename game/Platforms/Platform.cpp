@@ -18,9 +18,19 @@ void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {
 }
 
 bool IPlatform::isColliding(const Player& player) const {
-  return !(player.x + player.width <= left() || player.x >= right() ||
-           player.y + player.height <= top() || player.y >= bottom()) &&
-         player.velY > 0.0f;
+  // Only collide when player is falling
+  if (player.velY <= 0.0f) return false;
+
+  float playerLeft = player.x;
+  float playerRight = player.x + player.width;
+  float playerBottom = player.y + player.height;
+
+  bool horizOverlap = !(playerRight <= left() || playerLeft >= right());
+  const float LAND_TOLERANCE = 5.0f;
+  bool landed =
+      (playerBottom > top()) && (playerBottom - LAND_TOLERANCE <= top());
+
+  return horizOverlap && landed;
 }
 
 void IPlatform::reset(int x, int y) {

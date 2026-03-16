@@ -9,4 +9,4 @@ Trampoline::Trampoline() {
 
 void Trampoline::update(float, int) {}
 
-void Trampoline::applyEffect(Player& player) { player.jump(2.0f); }
+void Trampoline::applyEffect(Player& player) { player.jump(1.0f); }

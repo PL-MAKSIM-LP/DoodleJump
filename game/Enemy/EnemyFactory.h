@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "IEnemy.h"
 
@@ -14,5 +15,6 @@ class EnemyFactory {
 
  private:
   Sprite* groundSprite = nullptr;
-  Sprite* flyingSprite = nullptr;
+  std::vector<Sprite*> flyingFrames;
+  bool flyingFramesInitialized = false;
 };

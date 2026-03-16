@@ -35,6 +35,22 @@ void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
     if (e->isAlive()) e->update(dt, screenWidth_);
   }
 
+  // Ensure there's a minimum number of active enemies by spawning off-screen
+  const int desiredEnemies = 5;
+  int aliveCount = 0;
+  for (const auto &e : enemies) {
+    if (e->isAlive()) ++aliveCount;
+  }
+  if (aliveCount < desiredEnemies) {
+    int toSpawn = desiredEnemies - aliveCount;
+    for (int i = 0; i < toSpawn; ++i) {
+      // place spawned enemies above the player's view (off-screen)
+      float spawnY =
+          playerY - spawnAhead - (i + 1) * EnemyConfig::SPAWN_INTERVAL;
+      spawnEnemy(spawnY);
+    }
+  }
+
   if (!spawnEnabled && playerY <= spawnStartY) {
     spawnEnabled = true;
     float firstY = playerY - spawnAhead;
@@ -78,17 +94,23 @@ EnemyCollision EnemyManager::checkPlayerCollision(const Player &player) {
   for (auto &e : enemies) {
     if (!e->isAlive()) continue;
     auto collisionResult = EnemyCollision::NOTHING;
+    // Enemy bounding box: top = e->getY(), bottom = e->getY() + e->getH()
     bool coll = !(player.x + player.width <= e->getX() ||
                   player.x >= e->getX() + e->getW() ||
                   player.y + player.height <= e->getY() ||
                   player.y >= e->getY() + e->getH());
     if (coll) {
-      collisionResult = EnemyCollision::HIT;
-      if (e->getType() == EnemyType::GROUND && player.velY < 0) {
-        collisionResult = EnemyCollision::STOMP;
+      // Prioritize stomp detection: player must be falling and primarily above
+      // the enemy. Use vertical centers to decide if player approaches from
+      // above.
+      float playerCenterY = player.y + static_cast<float>(player.height) / 2.0f;
+      float enemyCenterY = e->getY() + static_cast<float>(e->getH()) / 2.0f;
+      if (player.velY > 0 && playerCenterY < enemyCenterY) {
         e->setAlive(false);
+        return EnemyCollision::STOMP;
       }
-      return collisionResult;
+
+      return EnemyCollision::HIT;
     }
   }
 
@@ -114,6 +136,16 @@ void EnemyManager::spawnEnemy(float y) {
   std::uniform_int_distribution<int> xDist(
       0, std::max(0, screenWidth - EnemyConfig::X_MARGIN));
 
+  auto tooCloseX = [&](int candidateX) {
+    const int minSpacing = 500;  // pixels
+    for (const auto &exst : enemies) {
+      if (!exst->isAlive()) continue;
+      if (std::abs(static_cast<int>(exst->getX()) - candidateX) < minSpacing)
+        return true;
+    }
+    return false;
+  };
+
   if (platformManager) {
     const auto &plats = platformManager->getPlatforms();
     const float tolerance = EnemyConfig::PLATFORM_TOLERANCE;
@@ -124,6 +156,8 @@ void EnemyManager::spawnEnemy(float y) {
       if (std::fabs(py - y) <= tolerance) {
         int ex =
             static_cast<int>(up->x + (up->w - EnemyConfig::GROUND_W) / 2.0f);
+        // enforce horizontal spacing: skip this platform if too close
+        if (tooCloseX(ex)) continue;
         int ey = static_cast<int>(up->y - EnemyConfig::GROUND_H);
         auto e = enemyFactory.create(ex, ey, EnemyType::GROUND);
         enemies.push_back(std::move(e));
@@ -132,9 +166,20 @@ void EnemyManager::spawnEnemy(float y) {
     }
   }
 
-  int x = xDist(gen);
-  auto e = enemyFactory.create(x, static_cast<int>(y), EnemyType::FLYING);
-  enemies.push_back(std::move(e));
+  // Flying enemy spawn: try several attempts to find X with required spacing
+  const int maxAttempts = 8;
+  int chosenX = -1;
+  for (int attempt = 0; attempt < maxAttempts; ++attempt) {
+    int x = xDist(gen);
+    if (!tooCloseX(x)) {
+      chosenX = x;
+      break;
+    }
+  }
+  if (chosenX == -1) return;  // give up spawning to maintain spacing
+
+  auto e = enemyFactory.create(chosenX, static_cast<int>(y), EnemyType::FLYING);
+  if (e) enemies.push_back(std::move(e));
 }
 
 void EnemyManager::clear() {

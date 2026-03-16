@@ -47,6 +47,10 @@ class PlatformManager {
   PlatformFactory factory;
 
   std::vector<std::unique_ptr<IPlatform>> platforms;
+  // Try this many times to find a non-overlapping spawn X
+  static constexpr int SPAWN_RETRY_COUNT = 8;
+
+  bool overlapsExisting(float x, float y, int w, int h) const;
   float easyThreshold =
       static_cast<float>(screenHeight) - PlatformManagerConfig::EASY_OFFSET;
   float mediumThreshold =

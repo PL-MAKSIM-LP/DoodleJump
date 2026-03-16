@@ -66,4 +66,5 @@ void BreakablePlatform::onCollide(Player& player) {
     breakStage = 0;
     breakTimer = 0.0f;
   }
+  player.jump();
 }

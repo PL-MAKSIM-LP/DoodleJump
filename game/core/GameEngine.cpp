@@ -101,13 +101,13 @@ void GameEngine::updatePlaying(float dt) {
   platformManager.update(dt, player);
   enemyManager.update(dt, screenWidth, camera, player.y);
   projectileManager.update(dt, camera);
-  bonusManager.update(screenWidth, screenHeight, camera, player.y);
+  bonusManager.update(screenWidth, screenHeight, camera, player);
 
   // Проверяем столкновение с врагом
   EnemyCollision collisionResult = enemyManager.checkPlayerCollision(player);
   if (collisionResult == EnemyCollision::HIT) {
     std::cout << "Player collided with enemy - GAME OVER" << std::endl;
-    state = GameState::GAME_OVER;
+    // state = GameState::GAME_OVER;
     return;
   } else if (collisionResult == EnemyCollision::STOMP) {
     std::cout << "Player stomped on enemy" << std::endl;

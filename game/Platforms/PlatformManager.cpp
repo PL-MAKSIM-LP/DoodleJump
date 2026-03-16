@@ -41,11 +41,35 @@ void PlatformManager::update(float dt, Player& player) {
   while ((int)platforms.size() < maxActive) {
     // compute adaptive gap: fewer platforms at higher altitudes
     float gap = computeSpawnGap(lastSpawnY);
+    // add a small random multiplier to make gaps less uniform
+    float gapRand = std::uniform_real_distribution<float>(0.75f, 1.35f)(gen);
+    gap *= gapRand;
     float spawnY = lastSpawnY - gap;
-    int x = xDist(gen);
+
+    // pick base X and add jitter so platforms don't align in neat columns
+    int baseX = xDist(gen);
+    int jitter = std::uniform_int_distribution<int>(
+        -static_cast<int>(PlatformConfig::WIDTH),
+        static_cast<int>(PlatformConfig::WIDTH))(gen);
+    int x = baseX + jitter;
+    // clamp to screen bounds
+    x = std::max(0, std::min(x, screenWidth - PlatformConfig::WIDTH));
+
     PlatformType type = selectPlatformType(spawnY);
     spawn(static_cast<float>(x), spawnY, type);
     lastSpawnY = spawnY;
+
+    // Small chance to spawn nearby companion platforms (clusters)
+    float clusterP = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+    if (clusterP < 0.25f) {
+      int offsetX = std::uniform_int_distribution<int>(-120, 120)(gen);
+      int cx = std::max(
+          0, std::min(x + offsetX, screenWidth - PlatformConfig::WIDTH));
+      float cy =
+          spawnY - std::uniform_real_distribution<float>(10.0f, 60.0f)(gen);
+      PlatformType ctype = selectPlatformType(cy);
+      spawn(static_cast<float>(cx), cy, ctype);
+    }
   }
 
   for (const auto& p : platforms) {
@@ -107,12 +131,54 @@ void PlatformManager::render(const Camera& camera) {
 }
 
 void PlatformManager::spawn(float x, float y, PlatformType type) {
-  std::cout << "spawn" << std::endl;
-  std::cout << x << " " << y << std::endl;
+  // Attempt to find a non-overlapping X position for the new platform.
+  int w = PlatformConfig::WIDTH;
+  int h = PlatformConfig::HEIGHT;
+  float spawnX = x;
+  bool placed = false;
+
+  for (int attempt = 0; attempt < SPAWN_RETRY_COUNT; ++attempt) {
+    // Clamp candidate X
+    int candX =
+        std::max(0, std::min(static_cast<int>(spawnX), screenWidth - w));
+    if (!overlapsExisting(static_cast<float>(candX), y, w, h)) {
+      spawnX = static_cast<float>(candX);
+      placed = true;
+      break;
+    }
+    // jitter and try again
+    int jitter = std::uniform_int_distribution<int>(-w, w)(gen);
+    spawnX = x + jitter;
+  }
+
+  if (!placed) {
+    // As a fallback try the original X clamped; if it still overlaps, skip
+    // spawn
+    int candX = std::max(0, std::min(static_cast<int>(x), screenWidth - w));
+    if (overlapsExisting(static_cast<float>(candX), y, w, h)) {
+      return;  // give up spawning to avoid overlap
+    }
+    spawnX = static_cast<float>(candX);
+  }
 
   auto platform =
-      factory.create(static_cast<int>(x), static_cast<int>(y), type);
-  platforms.push_back(std::move(platform));
+      factory.create(static_cast<int>(spawnX), static_cast<int>(y), type);
+  if (platform) platforms.push_back(std::move(platform));
+}
+
+bool PlatformManager::overlapsExisting(float x, float y, int w, int h) const {
+  for (const auto& p : platforms) {
+    if (!p->active) continue;
+    // rectangle overlap check
+    float px = p->x;
+    float py = p->y;
+    int pw = p->w;
+    int ph = PlatformConfig::HEIGHT;  // use platform height
+    bool intersect =
+        !(x + w <= px || x >= px + pw || y + h <= py || y >= py + ph);
+    if (intersect) return true;
+  }
+  return false;
 }
 
 void PlatformManager::clear() { platforms.clear(); }

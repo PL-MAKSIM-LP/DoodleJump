@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../Camera/Camera.h"
+#include "../Player/Player.h"
 #include "BonusFactory.h"
 #include "IBonus.h"
 
@@ -13,7 +14,7 @@ class BonusManager {
   ~BonusManager() = default;
 
   void update(int screenWidth, int screenHeight, const Camera& camera,
-              float playerY);
+              const Player& player);
   void render(const Camera& camera);
   void clear();  // Очистить все бонусы
 
@@ -33,5 +34,5 @@ class BonusManager {
   void spawnCoin(int x, int y);
   void spawnTrampoline(int x, int y);
 
-  int coinCapacity = 5;
+  int coinCapacity = 0;
 };

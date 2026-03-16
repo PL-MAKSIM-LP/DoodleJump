@@ -22,7 +22,6 @@ class IBonus {
 
     if (!collides) return false;
 
-    alive = false;
     applyEffect(player);
     return true;
   }

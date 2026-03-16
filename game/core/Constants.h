@@ -19,8 +19,8 @@ constexpr int HEIGHT = 18;
 }  // namespace PlatformConfig
 
 namespace PlatformManagerConfig {
-constexpr float SPAWN_GAP_Y = 80.0f;  // base gap fallback
-constexpr int MAX_ACTIVE = 20;
+constexpr float SPAWN_GAP_Y = 20.0f;  // base gap fallback
+constexpr int MAX_ACTIVE = 30;
 constexpr float EASY_OFFSET = 500.0f;
 constexpr float MEDIUM_OFFSET = 2000.0f;
 constexpr float HARD_OFFSET = 4000.0f;
@@ -71,10 +71,10 @@ constexpr float PLATFORM_TOLERANCE =
     40.0f;  // tolerance when matching platform Y for grounded spawn
 
 // Visual sizes
-constexpr int GROUND_W = 50;
-constexpr int GROUND_H = 40;
-constexpr int FLY_W = 40;
-constexpr int FLY_H = 30;
+constexpr int GROUND_W = 130;
+constexpr int GROUND_H = 70;
+constexpr int FLY_W = 60;
+constexpr int FLY_H = 60;
 }  // namespace EnemyConfig
 
 // ========== PROJECTILE CONFIG ==========
@@ -108,7 +108,7 @@ constexpr int TRAMPOLINE_W = 70;
 constexpr int TRAMPOLINE_H = 20;
 constexpr float TRAMPOLINE_PROBABILITY = 0.20f;
 constexpr float TRAMPOLINE_BOOST_MULT = 1.7f;
-constexpr int TRAMPOLINE_LIFE_TIME = 5000;  // milliseconds
+constexpr int TRAMPOLINE_LIFE_TIME = 20000;  // milliseconds
 
 // Misc
 constexpr float COIN_PLATFORM_OFFSET = 18.0f;
@@ -118,5 +118,5 @@ constexpr float COIN_PLATFORM_OFFSET = 18.0f;
 namespace CoinsConfig {
 constexpr int COIN_VALUE = 10;
 constexpr int START_VALUE = 50;
-constexpr int TRAMPOLINE_VALUE = 15;
+constexpr int TRAMPOLINE_VALUE = 20;
 }  // namespace CoinsConfig

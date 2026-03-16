@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <random>
 
 #include "core/Constants.h"
 
@@ -17,7 +18,9 @@ void MovingPlatformHorizontal::update(float dt, int screenWidth) {
 }
 
 void MovingPlatformHorizontal::setMovement() {
-  std::cout << x << " " << y << std::endl;
   minX = x - MovingPlatformConfig::SWING;
   maxX = x + MovingPlatformConfig::SWING;
+  static std::mt19937 gen(std::random_device{}());
+  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+  moveDir = dist(gen);
 }
