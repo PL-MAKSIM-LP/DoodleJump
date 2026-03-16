@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../framework/Framework.h"
-#include "../Camera.h"
-#include "../Player.h"
+#include "../Camera/Camera.h"
+#include "../Player/Player.h"
 
 enum class BonusType { COIN, TRAMPOLINE };
 

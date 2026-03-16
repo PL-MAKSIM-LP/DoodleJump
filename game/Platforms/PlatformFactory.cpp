@@ -3,11 +3,11 @@
 #include <iostream>
 #include <string>
 
-#include "../Constants.h"
 #include "BreakablePlatform.h"
 #include "MovingPlatformHorizontal.h"
 #include "MovingPlatformVertical.h"
 #include "NormalPlatform.h"
+#include "core/Constants.h"
 
 std::unique_ptr<IPlatform> PlatformFactory::create(int x, int y,
                                                    PlatformType type) {

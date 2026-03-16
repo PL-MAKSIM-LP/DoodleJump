@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../framework/Framework.h"
+#include "../../framework/Framework.h"
 
 class ScoreDisplay {
  public:

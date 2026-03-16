@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "../Constants.h"
+#include "core/Constants.h"
 
 void MovingPlatformHorizontal::update(float dt, int screenWidth) {
   x += moveDir * moveSpeed * dt;

@@ -1,6 +1,6 @@
 #include "Trampoline.h"
 
-#include "../Constants.h"
+#include "core/Constants.h"
 
 Trampoline::Trampoline() {
   w = BonusConfig::TRAMPOLINE_W;

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../Constants.h"
+#include "core/Constants.h"
 
 void BreakablePlatform::update(float dt, int screenWidth) {
   if (broken && !falling) {

@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "../Constants.h"
 #include "CoinBonus.h"
 #include "Trampoline.h"
+#include "core/Constants.h"
 
 BonusFactory::~BonusFactory() {
   if (coinSprite) {

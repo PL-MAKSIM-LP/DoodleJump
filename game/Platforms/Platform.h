@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../../framework/Framework.h"
-#include "../Camera.h"
-#include "../Constants.h"
-#include "../Player.h"
+#include "../Camera/Camera.h"
+#include "../Player/Player.h"
+#include "core/Constants.h"
 
 enum class PlatformType {
   NORMAL,

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "../Bonuses/BonusManager.h"
-#include "../Camera.h"
+#include "../Camera/Camera.h"
 #include "../Commands/InputHandler.h"
 #include "../Enemy/EnemyManager.h"
-#include "../GameState.h"
 #include "../Platforms/PlatformManager.h"
-#include "../Player.h"
-#include "../ScoreDisplay.h"
+#include "../Player/Player.h"
+#include "../Score/ScoreDisplay.h"
+#include "../core/GameState.h"
 #include "../projectile/ProjectileManager.h"
 
 class GameEngine {

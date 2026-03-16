@@ -1,7 +1,7 @@
 #include "CoinBonus.h"
 
-#include "../Constants.h"
 #include "../GameData/GameData.h"
+#include "core/Constants.h"
 
 CoinBonus::CoinBonus() {
   w = BonusConfig::COIN_W;

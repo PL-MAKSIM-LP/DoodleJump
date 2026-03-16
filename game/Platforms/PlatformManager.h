@@ -4,11 +4,11 @@
 #include <random>
 #include <vector>
 
-#include "../Camera.h"
-#include "../Constants.h"
-#include "../Player.h"
-#include "Platform.h"
-#include "PlatformFactory.h"
+#include "../Camera/Camera.h"
+#include "../Platforms/Platform.h"
+#include "../Platforms/PlatformFactory.h"
+#include "../Player/Player.h"
+#include "core/Constants.h"
 
 class PlatformManager {
  public:

@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "../../framework/Framework.h"
-#include "../Camera.h"
-#include "../Constants.h"
+#include "../Camera/Camera.h"
 #include "Projectile.h"
+#include "core/Constants.h"
 
 class ProjectileManager {
  public:

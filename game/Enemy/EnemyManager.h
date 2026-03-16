@@ -3,10 +3,10 @@
 #include <memory>
 #include <vector>
 
-#include "../Camera.h"
-#include "../Player.h"
-#include "EnemyFactory.h"
-#include "IEnemy.h"
+#include "../Camera/Camera.h"
+#include "../Enemy/EnemyFactory.h"
+#include "../Enemy/IEnemy.h"
+#include "../Player/Player.h"
 
 enum class EnemyCollision { NOTHING, STOMP, HIT };
 

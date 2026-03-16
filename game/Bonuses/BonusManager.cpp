@@ -4,7 +4,7 @@
 #include <cstdlib>
 
 #include "../../framework/Framework.h"
-#include "../Constants.h"
+#include "core/Constants.h"
 
 void BonusManager::update(int screenWidth, int screenHeight,
                           const Camera& camera, float playerY) {

@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "../../framework/Framework.h"
-#include "../Constants.h"
 #include "FlyingEnemy.h"
 #include "GroundedEnemy.h"
+#include "core/Constants.h"
 
 EnemyFactory::EnemyFactory() : groundSprite(nullptr), flyingSprite(nullptr) {}
 

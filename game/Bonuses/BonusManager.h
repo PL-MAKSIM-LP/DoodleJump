@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "../Camera.h"
+#include "../Camera/Camera.h"
 #include "BonusFactory.h"
 #include "IBonus.h"
 

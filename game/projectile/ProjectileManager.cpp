@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include "../Constants.h"
+#include "core/Constants.h"
 
 ProjectileManager::ProjectileManager() {}
 

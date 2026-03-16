@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-#include "../Constants.h"
 #include "../Enemy/EnemyManager.h"
 #include "../projectile/ProjectileManager.h"
 #include "ICommand.h"
+#include "core/Constants.h"
 
 class ShootCommand : public ICommand {
  public:
@@ -16,7 +16,6 @@ class ShootCommand : public ICommand {
     float sx = player.x + player.width / 2.0f - (ProjectileConfig::W / 2.0f);
     float sy = player.y;
 
-    // find nearest enemy on screen (relative to player)
     IEnemy* target = nullptr;
     float bestDist = 1e9f;
     for (auto& up : emgr->getEnemies()) {

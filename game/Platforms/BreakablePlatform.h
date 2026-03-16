@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Constants.h"
 #include "Platform.h"
+#include "core/Constants.h"
 
 class BreakablePlatform : public IPlatform {
  public:

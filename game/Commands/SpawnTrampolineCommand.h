@@ -1,8 +1,8 @@
 #pragma once
 #include "../Bonuses/BonusManager.h"
-#include "../Constants.h"
 #include "../GameData/GameData.h"
 #include "ICommand.h"
+#include "core/Constants.h"
 
 class SpawnTrampolineCommand : public ICommand {
  public:

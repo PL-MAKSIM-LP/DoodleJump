@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "Constants.h"
+#include "core/Constants.h"
 
 void Camera::update(float playerY, int screenHeight) {
   float desiredScreenY = screenHeight * CameraConfig::DESIRED_SCREEN_Y_FRAC;

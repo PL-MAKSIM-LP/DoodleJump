@@ -4,7 +4,7 @@
 #include <string>
 
 #include "../framework/Framework.h"
-#include "Constants.h"
+#include "core/Constants.h"
 #include "core/GameEngine.h"
 
 class MyFramework : public Framework {
