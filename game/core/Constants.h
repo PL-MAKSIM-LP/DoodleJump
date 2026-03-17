@@ -9,7 +9,7 @@ constexpr int MAX_HEIGHT = 1080;
 }  // namespace GameConfig
 
 namespace PlayerConfig {
-constexpr int JumpHeight = 600;
+constexpr int JumpHeight = 400;
 
 }  // namespace PlayerConfig
 namespace CameraConfig {
@@ -60,7 +60,7 @@ constexpr float SWING = 50.0f;
 
 namespace BreakablePlatformConfig {
 constexpr int MAX_BREAK_SPRITES = 4;  // Number of break animation frames
-constexpr int MAX_BREAK_STAGES = 3;  // Last stage before falling
+constexpr int MAX_BREAK_STAGES = 3;   // Last stage before falling
 constexpr float BREAK_STEP_DURATION = 0.12f;
 constexpr float FALL_SPEED = 200.0f;
 constexpr float OFFSCREEN_PADDING = 1000.0f;
@@ -79,7 +79,8 @@ namespace EnemyConfig {
 // Sprite paths
 constexpr const char* SPRITE_GROUNDED_PATH = "../sprites/enemyGrounded.png";
 constexpr const char* SPRITE_FLYING_FALLBACK = "../sprites/enemyFlying.png";
-constexpr const char* SPRITE_FLYING_BASE_PATH = "../sprites/flying";  // for {1,2,3}.png
+constexpr const char* SPRITE_FLYING_BASE_PATH =
+    "../sprites/flying";  // for {1,2,3}.png
 
 // Animation
 constexpr int FLY_FRAMES_COUNT = 3;
@@ -93,9 +94,10 @@ constexpr float SPAWN_AHEAD_EXTRA =
     200.0f;  // place spawned enemies this far above player
 constexpr int INITIAL_BATCH =
     5;  // initial number of enemies to spawn when enabling
-constexpr int DESIRED_ENEMIES = 5;        // target number of active enemies
-constexpr int SPAWN_X_ATTEMPTS = 8;       // attempts to find valid X position
-constexpr float MIN_HORIZONTAL_SPACING = 500.0f;  // minimum distance between spawned enemies
+constexpr int DESIRED_ENEMIES = 5;   // target number of active enemies
+constexpr int SPAWN_X_ATTEMPTS = 8;  // attempts to find valid X position
+constexpr float MIN_HORIZONTAL_SPACING =
+    500.0f;  // minimum distance between spawned enemies
 
 // Placement and removal
 constexpr float REMOVE_SCREEN_PADDING =

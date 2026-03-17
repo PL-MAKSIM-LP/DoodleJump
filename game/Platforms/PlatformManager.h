@@ -30,24 +30,24 @@ class PlatformManager {
     return platforms;
   }
 
+  void setRandomGenerator(std::mt19937& generator) {
+    rng = &generator;
+    std::cerr << "[PlatformManager::setRandomGenerator] generator set"
+              << std::endl;
+  }
+
  private:
   void spawnNextPlatform();
   float computeSpawnY();
-
-  // Подметоды для читаемости спавна
   float computeSpawnX();
-  std::vector<std::unique_ptr<IPlatform>> platforms;
-
-  // Try this many times to find a non-overlapping spawn X
-  static constexpr int SPAWN_RETRY_COUNT = 8;
   bool platformsOverlap(float x, float y, int w, int h) const;
-
-  // Определить зону сложности по Y
   DifficultyZone getDifficultyZone(float y) const;
 
-  std::mt19937 gen;
+  static constexpr int SPAWN_RETRY_COUNT = 8;
+  std::vector<std::unique_ptr<IPlatform>> platforms;
+  std::mt19937* rng = nullptr;
   PlatformFactory factory;
   int screenWidth = 0;
   int screenHeight = 0;
-  float lastPlatformMaxY = 0.0f;  // Y последней спавненой платформы
+  float lastPlatformMaxY = 0.0f;
 };

@@ -11,6 +11,9 @@
 #include "../Player/Player.h"
 
 enum class EnemyCollision { NOTHING, STOMP, HIT };
+struct Object {
+  float x, y, w, h;
+};
 
 class EnemyManager {
  public:
@@ -18,53 +21,27 @@ class EnemyManager {
   ~EnemyManager() = default;
 
   void init(int screenWidth, int screenHeight);
-  // playerY: current player world Y coordinate (used to decide when to spawn
-  // enemies)
+
   void update(float dt, int screenWidth, const Camera& camera, float playerY);
   void render(const Camera& camera);
-  void clear();  // Очистить всех врагов
+  void clear();
 
-  // Returns true if player was hit by an enemy
-  EnemyCollision checkPlayerCollision(const Player& player);
   virtual void onCollide(Player& player) { player.jump(); };
-  // Marks enemy as dead if hit by a projectile AABB
-  bool checkProjectileCollision(float px, float py, float pw, float ph);
 
-  std::vector<std::unique_ptr<IEnemy>>& getEnemies() { return enemies; }
-
-  // allow other systems to provide PlatformManager for spawn placement
   void setPlatformManager(class PlatformManager* pm);
 
-  // Set reference to global random number generator
   void setRandomGenerator(std::mt19937& generator) {
     rng = &generator;
-    std::cerr << "🟢 [EnemyManager::setRandomGenerator] RNG set" << std::endl;
+    std::cerr << "[EnemyManager::setRandomGenerator] set generator"
+              << std::endl;
   }
+
+  EnemyCollision checkPlayerCollision(const Player& player);
+  bool checkProjectileCollision(const Object& projectile);
 
  private:
   std::vector<std::unique_ptr<IEnemy>> enemies;
 
-  int screenWidth = 0;
-  int screenHeight = 0;
-
-  // spawn control
-  bool spawnEnabled = false;
-  float spawnStartY = 0.0f;  // world Y at which enemies start spawning
-  float lastSpawnY = 0.0f;   // world Y of last (most-up) spawn
-  float spawnInterval = EnemyConfig::SPAWN_INTERVAL;
-  float spawnAhead =
-      0.0f;  // how far ahead of player (in world Y) to place new enemies
-
-  // pointer to platform manager to spawn enemies on platforms
-  class PlatformManager* platformManager = nullptr;
-  EnemyFactory enemyFactory;
-
-  // pointer to global random number generator
-  std::mt19937* rng = nullptr;
-
-  void spawnEnemy(float y);
-
-  // Helper methods for cleaner code
   int countAliveEnemies() const;
   void updateEnemiesFromCamera(float dt, int screenWidth, const Camera& camera);
   void cleanupDeadEnemies(const Camera& camera);
@@ -72,7 +49,16 @@ class EnemyManager {
   void spawnMissingEnemies(float playerY);
   void spawnInitialBatch(float playerY);
 
-  // Helper for AABB collision detection
-  bool checkAABBCollision(float x1, float y1, float w1, float h1, float x2,
-                          float y2, float w2, float h2) const;
+  bool checkCollision(const Object& obj1, const Object& obj2) const;
+  void spawnEnemy(float y);
+
+  int screenWidth = 0;
+  int screenHeight = 0;
+
+  class PlatformManager* platformManager = nullptr;
+  EnemyFactory enemyFactory;
+  std::mt19937* rng = nullptr;
+
+  float spawnStartY;
+  float lastSpawnY;
 };

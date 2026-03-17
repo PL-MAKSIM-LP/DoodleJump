@@ -21,7 +21,7 @@ class Projectile {
 
  public:
   float velX = 0.0f;
-  float velY = ProjectileConfig::DEFAULT_VELY;  // default moves upward
+  float velY = ProjectileConfig::DEFAULT_VELY;
 
  private:
   int w = ProjectileConfig::W;

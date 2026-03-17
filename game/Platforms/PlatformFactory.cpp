@@ -22,11 +22,11 @@ Sprite* PlatformFactory::loadAndSetupSprite(const char* path) {
 std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
     int x, int y, PlatformType type, Sprite* sprite) const {
   Sprite* spr = sprite ? sprite : normalSprite;
-
+  std::cerr << "[PlatformFactory] Creating platform of type "
+            << static_cast<int>(type) << " at x=" << x << " y=" << y
+            << std::endl;
   switch (type) {
     case PlatformType::MOVING_VERTICAL: {
-      std::cerr << "🟢 [PlatformFactory] Creating MOVING_VERTICAL at x=" << x
-                << " y=" << y << std::endl;
       auto p = std::make_unique<MovingPlatformVertical>();
       p->init(x, y, spr, type);
       p->setMovement();
@@ -34,8 +34,6 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
     }
 
     case PlatformType::MOVING_HORIZONTAL: {
-      std::cerr << "🟢 [PlatformFactory] Creating MOVING_HORIZONTAL at x=" << x
-                << " y=" << y << std::endl;
       auto p = std::make_unique<MovingPlatformHorizontal>();
       p->init(x, y, spr, type);
       p->setMovement();
@@ -43,19 +41,14 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
     }
 
     case PlatformType::BREAKABLE: {
-      std::cerr << "🟢 [PlatformFactory] Creating BREAKABLE at x=" << x
-                << " y=" << y << std::endl;
       auto p = std::make_unique<BreakablePlatform>();
-      p->setFactory(
-          const_cast<PlatformFactory*>(this));  // Pass factory reference
+      p->setFactory(const_cast<PlatformFactory*>(this));
       p->init(x, y, spr, type);
       return p;
     }
 
     case PlatformType::NORMAL:
     default: {
-      std::cerr << "🟢 [PlatformFactory] Creating NORMAL at x=" << x
-                << " y=" << y << std::endl;
       auto p = std::make_unique<NormalPlatform>();
       p->init(x, y, spr, PlatformType::NORMAL);
       return p;
@@ -64,6 +57,8 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
 }
 
 PlatformFactory::PlatformFactory() {
+  // TODO
+  std::cerr << "[PlatformFactory::PlatformFactory]" << std::endl;
   normalSprite = loadAndSetupSprite(PlatformConfig::SPRITE_NORMAL_PATH);
   movingHorizontalSprite =
       loadAndSetupSprite(PlatformConfig::SPRITE_MOVING_H_PATH);
@@ -71,12 +66,12 @@ PlatformFactory::PlatformFactory() {
       loadAndSetupSprite(PlatformConfig::SPRITE_MOVING_V_PATH);
   breakableSprite = loadAndSetupSprite(PlatformConfig::SPRITE_BREAKABLE_PATH);
 
-  // Initialize break animation sprites (loaded once, cached for reuse)
   initializeBreakAnimationSprites();
 }
 
 PlatformFactory::~PlatformFactory() {
-  // Clean up main platform sprites
+  std::cerr << "[PlatformFactory::~PlatformFactory]" << std::endl;
+
   if (normalSprite) {
     destroySprite(normalSprite);
     normalSprite = nullptr;
@@ -97,14 +92,12 @@ PlatformFactory::~PlatformFactory() {
     breakableSprite = nullptr;
   }
 
-  // Clean up break animation sprites
   clearBreakAnimationSprites();
-
-  std::cerr << "🟢 [PlatformFactory::~PlatformFactory] Cleaned up all sprites"
-            << std::endl;
 }
 
 void PlatformFactory::initializeBreakAnimationSprites() {
+  std::cerr << "[PlatformFactory::initializeBreakAnimationSprites]"
+            << std::endl;
   for (int i = 0; i < BreakablePlatformConfig::MAX_BREAK_SPRITES; ++i) {
     breakAnimationSprites[i] =
         createSprite(BreakablePlatformConfig::SPRITE_BREAK_PATHS[i]);
@@ -116,6 +109,7 @@ void PlatformFactory::initializeBreakAnimationSprites() {
 }
 
 void PlatformFactory::clearBreakAnimationSprites() {
+  std::cerr << "[PlatformFactory::clearBreakAnimationSprites]" << std::endl;
   for (auto& sprite : breakAnimationSprites) {
     if (sprite) {
       destroySprite(sprite);

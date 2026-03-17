@@ -37,7 +37,7 @@ class IEnemy {
   virtual bool isAlive() const { return alive; }
   virtual void setAlive(bool a) {
     if (alive && !a) {  // Transitioning from alive to dead
-      std::cerr << "🟡 [IEnemy] Enemy died at x=" << x << " y=" << y
+      std::cerr << "[IEnemy::setAlive] Enemy died at x=" << x << " y=" << y
                 << std::endl;
     }
     alive = a;

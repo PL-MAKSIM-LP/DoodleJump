@@ -14,6 +14,6 @@ void Trampoline::update(float, int) {
 }
 
 void Trampoline::applyEffect(Player& player) {
-  std::cerr << "🪂 [Trampoline::applyEffect] Boost jump" << std::endl;
+  std::cerr << "[Trampoline::applyEffect]" << std::endl;
   player.jump(BonusConfig::TRAMPOLINE_BOOST_MULT);
 }

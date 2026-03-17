@@ -9,28 +9,26 @@
 ProjectileManager::ProjectileManager() {}
 
 ProjectileManager::~ProjectileManager() {
-  // Clean up sprite resource
+  std::cerr << "[ProjectileManager::~ProjectileManager]" << std::endl;
   if (sprite) {
     destroySprite(sprite);
     sprite = nullptr;
   }
   projectiles.clear();
-  std::cerr << "🟢 [ProjectileManager::~ProjectileManager] Cleaned up"
-            << std::endl;
 }
 
 void ProjectileManager::init() {
-  std::cerr << "🟢 [ProjectileManager::init]" << std::endl;
+  std::cerr << "[ProjectileManager::init]" << std::endl;
   sprite = createSprite("../data/projectile.png");
   if (!sprite) {
-    std::cerr << "⚠️  Fallback to Breakout sprite" << std::endl;
+    std::cerr << "[ProjectileManager::init] Load Sprite" << std::endl;
     sprite = createSprite("../data/01-Breakout-Tiles.png");
   }
   if (sprite) {
     setSpriteSize(sprite, ProjectileConfig::W, ProjectileConfig::H);
-    std::cerr << "✅ [ProjectileManager] Sprite loaded" << std::endl;
+    std::cerr << "[ProjectileManager::init] Sprite loaded" << std::endl;
   } else {
-    std::cerr << "❌ [ProjectileManager] Failed to load sprite" << std::endl;
+    std::cerr << "[ProjectileManager::init] Failed to load sprite" << std::endl;
   }
 }
 
@@ -63,6 +61,7 @@ void ProjectileManager::render(const Camera &camera) {
 }
 
 void ProjectileManager::shoot(float x, float y, float velX, float velY) {
+  std::cerr << "[ProjectileManager::shoot]" << std::endl;
   Projectile p;
   p.x = x;
   p.y = y;
@@ -70,13 +69,9 @@ void ProjectileManager::shoot(float x, float y, float velX, float velY) {
   p.velY = velY;
   p.active = true;
   projectiles.push_back(p);
-  std::cerr << "🔫 [ProjectileManager::shoot] x=" << x << " y=" << y
-            << " velX=" << velX << " velY=" << velY
-            << " total=" << projectiles.size() << std::endl;
 }
 
 void ProjectileManager::clear() {
-  std::cerr << "🗑️  [ProjectileManager::clear] Cleared " << projectiles.size()
-            << " projectiles" << std::endl;
+  std::cerr << "[ProjectileManager::clear]" << std::endl;
   projectiles.clear();
 }

@@ -17,19 +17,26 @@ Player::~Player() {
 }
 
 void Player::init(int screenWidth, int screenHeight) {
-  std::cerr << "🟢 [Player::init] screenSize=" << screenWidth << "x"
+  std::cerr << "[Player::init] screenSize=" << screenWidth << "x"
             << screenHeight << std::endl;
   spriteLeft = createSprite("../sprites/lik-left.png");
   spriteRight = createSprite("../sprites/lik-right.png");
   lastSprite = spriteLeft;
 
-  if (spriteLeft) setSpriteSize(spriteLeft, width, height);
-  if (spriteRight) setSpriteSize(spriteRight, width, height);
+  if (spriteLeft)
+    setSpriteSize(spriteLeft, width, height);
+  else
+    std::cerr << "[Player::init] Failed to load spriteLeft" << std::endl;
+
+  if (spriteRight)
+    setSpriteSize(spriteRight, width, height);
+  else
+    std::cerr << "[Player::init] Failed to load spriteRight" << std::endl;
 
   x = (screenWidth / 2) - (width / 2);
   y = screenHeight - height;
   this->screenHeight = screenHeight;
-  std::cerr << "✅ [Player] Initialized at x=" << x << " y=" << y << std::endl;
+  std::cerr << "[Player] Initialized at x=" << x << " y=" << y << std::endl;
 }
 
 void Player::update(float dt, int screenWidth) {
@@ -38,9 +45,7 @@ void Player::update(float dt, int screenWidth) {
 
   if (y > screenHeight - height + 5) {
     alive = false;
-    std::cerr << "⚠️  [Player::update] DIED: fell off screen at y=" << y
-              << std::endl;
-    // jump();
+    std::cerr << "[Player::update] DIED " << std::endl;
   }
   velX = 0;
   if (movingLeft) {
@@ -58,8 +63,10 @@ void Player::update(float dt, int screenWidth) {
 
   x += velX * dt;
   if (x > screenWidth - width / 2) {
+    std::cerr << "[Player::update] swap to left" << std::endl;
     x = 0 - width / 2;
   } else if (x < 0 - width / 2) {
+    std::cerr << "[Player::update] swap to right" << std::endl;
     x = screenWidth - width / 2;
   }
 }
@@ -73,29 +80,27 @@ void Player::render(const Camera& camera) {
   } else {
     drawSprite(lastSprite, x, static_cast<int>(screenY));
   }
-  // Note: Render is called every frame, so no frequent logging to avoid spam
 }
 
 void Player::jump(float scale) {
   velY = -JUMP_FORCE * scale;
-  std::cerr << "⬆️  [Player::jump] scale=" << scale << " velY=" << velY
-            << std::endl;
+  std::cerr << "[Player::jump] scale=" << scale << std::endl;
 }
 
 void Player::startMoveLeft() {
   movingLeft = true;
-  std::cerr << "⬅️  [Player::startMoveLeft]" << std::endl;
+  std::cerr << "[Player::startMoveLeft]" << std::endl;
 };
 void Player::stopMoveLeft() {
   movingLeft = false;
-  std::cerr << "⏹️  [Player::stopMoveLeft]" << std::endl;
+  std::cerr << "[Player::stopMoveLeft]" << std::endl;
 };
 
 void Player::startMoveRight() {
   movingRight = true;
-  std::cerr << "➡️  [Player::startMoveRight]" << std::endl;
+  std::cerr << "➡️[Player::startMoveRight]" << std::endl;
 };
 void Player::stopMoveRight() {
   movingRight = false;
-  std::cerr << "⏹️  [Player::stopMoveRight]" << std::endl;
+  std::cerr << "[Player::stopMoveRight]" << std::endl;
 };

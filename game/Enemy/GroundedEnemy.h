@@ -9,8 +9,8 @@ class GroundedEnemy : public IEnemy {
   std::vector<Sprite*> walkFrames;
   int currentFrameIndex = 0;
   float animationTimer = 0.0f;
-  float frameDuration = 0.15f;  // 150ms между кадрами
-  float velocityX = 1.5f;       // скорость движения
+  float frameDuration = 0.15f;  // TODO
+  float velocityX = 1.5f;
 
  public:
   void setWalkFrames(const std::vector<Sprite*>& frames,

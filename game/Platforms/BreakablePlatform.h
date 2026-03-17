@@ -18,7 +18,7 @@ class BreakablePlatform : public IPlatform {
   bool broken = false;
   bool falling = false;
 
-  int breakStage = 0;
+  int frame = 0;
   int maxBreakStages = BreakablePlatformConfig::MAX_BREAK_STAGES;
   float breakTimer = 0.0f;
   float breakStepDuration = BreakablePlatformConfig::BREAK_STEP_DURATION;

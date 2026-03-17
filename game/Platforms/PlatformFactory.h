@@ -12,7 +12,6 @@ class PlatformFactory {
 
   std::unique_ptr<IPlatform> create(int x, int y, PlatformType type);
 
-  // Getter for cached breakable platform animation sprites
   Sprite* getBreakSprite(int stage) const {
     if (stage >= 0 && stage < BreakablePlatformConfig::MAX_BREAK_SPRITES) {
       return breakAnimationSprites[stage];
@@ -24,7 +23,7 @@ class PlatformFactory {
   Sprite* loadAndSetupSprite(const char* path);
 
   std::unique_ptr<IPlatform> createPlatform(int x, int y, PlatformType type,
-                                             Sprite* sprite) const;
+                                            Sprite* sprite) const;
 
   void initializeBreakAnimationSprites();
   void clearBreakAnimationSprites();
@@ -34,7 +33,6 @@ class PlatformFactory {
   Sprite* movingVerticalSprite = nullptr;
   Sprite* breakableSprite = nullptr;
 
-  // Cached animation sprites for breakable platforms (loaded once, reused)
   std::array<Sprite*, BreakablePlatformConfig::MAX_BREAK_SPRITES>
       breakAnimationSprites = {};
 };

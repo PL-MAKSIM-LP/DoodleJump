@@ -15,7 +15,7 @@ class ProjectileManager {
   void init();
   void update(float dt, const Camera& camera);
   void render(const Camera& camera);
-  void clear();  // Очистить все снаряды
+  void clear();
 
   void shoot(float x, float y, float velX = 0.0f,
              float velY = ProjectileConfig::DEFAULT_VELY);

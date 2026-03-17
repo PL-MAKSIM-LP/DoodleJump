@@ -10,15 +10,12 @@ class EnemyFactory {
   EnemyFactory();
   ~EnemyFactory();
 
-  std::unique_ptr<IEnemy> create(int x, int y,
-                                 EnemyType type = EnemyType::GROUND);
+  std::unique_ptr<IEnemy> create(int x, int y, EnemyType type);
 
  private:
-  Sprite* groundSprite = nullptr;
   std::vector<Sprite*> flyingFrames;
   bool flyingFramesInitialized = false;
-  std::vector<Sprite*> groundedWalkFrames;
-  bool groundedWalkFramesInitialized = false;
 
-  void initializeGroundedWalkFrames();
+  Sprite* groundSprite = nullptr;
+  bool groundedWalkFramesInitialized = false;
 };

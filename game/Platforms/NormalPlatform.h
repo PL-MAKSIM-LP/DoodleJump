@@ -4,7 +4,7 @@
 
 class NormalPlatform : public IPlatform {
  public:
-  NormalPlatform();
+  NormalPlatform() = default;
   ~NormalPlatform() override = default;
 
   void update(float dt, int screenHeight) override {}

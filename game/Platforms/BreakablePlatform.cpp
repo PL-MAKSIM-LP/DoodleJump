@@ -10,17 +10,16 @@ void BreakablePlatform::update(float dt, int screenHeight) {
     breakTimer += dt;
     if (breakTimer >= breakStepDuration) {
       breakTimer = 0.0f;
-      ++breakStage;
+      ++frame;
 
-      if (breakStage <= maxBreakStages &&
-          breakStage < BreakablePlatformConfig::MAX_BREAK_SPRITES) {
+      if (frame <= maxBreakStages &&
+          frame < BreakablePlatformConfig::MAX_BREAK_SPRITES) {
         if (factory) {
-          sprite = factory->getBreakSprite(breakStage);
+          sprite = factory->getBreakSprite(frame);
           if (sprite) setSpriteSize(sprite, w, h);
         } else {
-          // 🔴 CRITICAL: Factory not set - will crash on render!
-          std::cerr << "❌ CRITICAL: BreakablePlatform::factory is nullptr! "
-                    << "breakStage=" << breakStage << std::endl;
+          std::cerr << "[BreakablePlatform::update] factory is nullptr! "
+                    << "breakStage=" << frame << std::endl;
         }
       } else {
         falling = true;
@@ -37,16 +36,13 @@ void BreakablePlatform::update(float dt, int screenHeight) {
 
 void BreakablePlatform::onCollide(Player& player) {
   if (!broken) {
-    std::cerr << "🔴 [BreakablePlatform::onCollide] Breaking platform at x="
-              << x << " y=" << y << std::endl;
+    std::cerr << "[BreakablePlatform::onCollide] Breaking platform"
+              << std::endl;
     broken = true;
     player.jump();
   }
 
-  breakStage = 0;
+  frame = 0;
   breakTimer = 0.0f;
-
   player.jump();
-  std::cerr << "⬆️  [BreakablePlatform] Player jumped off broken platform"
-            << std::endl;
 }

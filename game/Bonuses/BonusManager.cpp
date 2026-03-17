@@ -9,23 +9,17 @@
 
 void BonusManager::update(int screenWidth, int screenHeight,
                           const Camera& camera, const Player& player) {
-  int coinsBefore = coins.size();
   coins.erase(std::remove_if(coins.begin(), coins.end(),
                              [&player](const std::unique_ptr<IBonus>& b) {
                                return !b->isAlive() ||
                                       b->top() < player.y + 500;
                              }),
               coins.end());
-  if (coins.size() < coinsBefore) {
-    std::cerr << "🟡 [BonusManager] Removed " << (coinsBefore - coins.size())
-              << " coins (total=" << coins.size() << ")" << std::endl;
-  }
 
   if (trampoline && !trampoline->isAlive()) {
-    std::cerr << "🟡 [BonusManager] Trampoline expired" << std::endl;
+    std::cerr << "Resetting trampoline" << std::endl;
     trampoline.reset();
-    spawnedTrampoline =
-        false;  // Prevent immediate respawn after player collision
+    spawnedTrampoline = false;
   }
 
   float playerScreenY = camera.toScreenY(player.y);
@@ -47,7 +41,6 @@ void BonusManager::update(int screenWidth, int screenHeight,
 
     if (getTickCount() >=
         timeSinceLastTrampoline + BonusConfig::TRAMPOLINE_LIFE_TIME) {
-      std::cerr << "🟡 [BonusManager] Trampoline lifetime expired" << std::endl;
       spawnedTrampoline = false;
       trampoline.reset();
     }
@@ -70,9 +63,9 @@ void BonusManager::update(int screenWidth, int screenHeight,
 void BonusManager::spawnCoin(int x, int y) {
   auto coin = bonusFactory.create(x, y, BonusType::COIN);
   if (coin) {
+    std::cerr << "BonusManager::spawnCoin at x=" << x << " y=" << y
+              << std::endl;
     coins.push_back(std::move(coin));
-    std::cerr << "💰 [BonusManager::spawnCoin] at x=" << x << " y=" << y
-              << " total=" << coins.size() << std::endl;
   }
 }
 
@@ -82,10 +75,9 @@ void BonusManager::spawnTrampoline(int x, int y) {
     trampoline = std::move(bonus);
     timeSinceLastTrampoline = getTickCount();
     spawnedTrampoline = true;
-    std::cerr << "🪂 [BonusManager::spawnTrampoline] at x=" << x << " y=" << y
-              << std::endl;
+    std::cerr << "[BonusManager::spawnTrampoline] create" << std::endl;
   } else {
-    std::cerr << "❌ [BonusManager::spawnTrampoline] Failed to create"
+    std::cerr << "[BonusManager::spawnTrampoline] Failed to create"
               << std::endl;
   }
 
@@ -93,9 +85,6 @@ void BonusManager::spawnTrampoline(int x, int y) {
   if (trampoline) {
     this->trampoline = std::move(trampoline);
     timeSinceLastTrampoline = getTickCount();
-    std::cerr << "🪂 [BonusManager::spawnTrampoline] at x=" << x << " y=" << y
-              << " lifetime=" << BonusConfig::TRAMPOLINE_LIFE_TIME << "ms"
-              << std::endl;
   }
 }
 
@@ -112,8 +101,7 @@ void BonusManager::clear() {
   int coinsBefore = coins.size();
   coins.clear();
   if (trampoline) trampoline.reset();
-  std::cerr << "🗑️  [BonusManager::clear] Cleared " << coinsBefore
-            << " coins and trampoline" << std::endl;
+  std::cerr << "[BonusManager::clear] Cleared " << std::endl;
 
   coins.clear();
   trampoline.reset();

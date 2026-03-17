@@ -29,17 +29,15 @@ class MyFramework : public Framework {
   }
 
   virtual bool Init() {
-    std::cerr << "=== 🎮 MyFramework::Init() ===" << std::endl;
+    std::cerr << "MyFramework::Init()" << std::endl;
     background = createSprite("../sprites/jungle-bck@2x.png");
     if (background) {
       setSpriteSize(background, screenWidth, screenHeight);
-      std::cerr << "✅ Background loaded" << std::endl;
     } else {
-      std::cerr << "⚠️  Background not found" << std::endl;
+      std::cerr << "[MyFramework::Init()] fail to load background" << std::endl;
     }
 
     gameEngine.init();
-    std::cerr << "=== ✅ Framework initialized ===" << std::endl;
 
     return true;
   }
@@ -49,6 +47,7 @@ class MyFramework : public Framework {
   }
 
   virtual bool Tick() {
+    std::cerr << "[MyFramework::Tick()]" << std::endl;
     unsigned int now = getTickCount();
     float dt = (now - lastTick) / 1000.0f;
     lastTick = now;

@@ -37,7 +37,7 @@ class IPlatform {
   bool isColliding(const Player& player) const;
 
   virtual ~IPlatform() {
-    std::cout << "platform destroyed " << static_cast<int>(type) << std::endl;
+    std::cerr << "platform destroyed " << static_cast<int>(type) << std::endl;
     if (sprite) destroySprite(sprite);
   }
 

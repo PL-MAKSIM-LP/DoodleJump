@@ -16,6 +16,5 @@ void CoinBonus::update(float, int) {
 
 void CoinBonus::applyEffect(Player&) {
   GameData::addCoins(CoinsConfig::COIN_VALUE);
-  std::cerr << "💰 [CoinBonus::applyEffect] +coins, total coins="
-            << GameData::getCoins() << std::endl;
+  std::cerr << "[CoinBonus::applyEffect]" << std::endl;
 }

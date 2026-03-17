@@ -19,8 +19,8 @@ GameEngine::GameEngine(int width, int height)
 GameEngine::~GameEngine() {}
 
 void GameEngine::init() {
-  std::cerr << "=== 🟢 GameEngine::init() ===" << std::endl;
-  // Инициализируем input команды
+  std::cerr << "[GameEngine::init()] start" << std::endl;
+
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
   inputHandler.setMouseCommand(
@@ -30,23 +30,23 @@ void GameEngine::init() {
       FRMouseButton::RIGHT,
       std::make_unique<SpawnTrampolineCommand>(&bonusManager));
 
-  // Инициализируем все менеджеры
   scoreDisplay.init();
   platformManager.init(screenWidth, screenHeight);
+  platformManager.setRandomGenerator(rng);
   enemyManager.init(screenWidth, screenHeight);
   enemyManager.setPlatformManager(&platformManager);
   enemyManager.setRandomGenerator(rng);
   projectileManager.init();
 
-  // Начинаем с меню
   state = GameState::MENU;
-  std::cerr << "=== ✅ GameEngine initialized ===" << std::endl;
+  std::cerr << "[GameEngine::init()] end" << std::endl;
 }
 
 void GameEngine::resetGame() {
-  std::cerr << "=== 🔄 GameEngine::resetGame() ===" << std::endl;
+  std::cerr << "[GameEngine::resetGame()] start" << std::endl;
   platformManager.clear();
   platformManager.init(screenWidth, screenHeight);
+  platformManager.setRandomGenerator(rng);
 
   bonusManager.clear();
 
@@ -64,12 +64,11 @@ void GameEngine::resetGame() {
 
   scoreDisplay = ScoreDisplay();
   scoreDisplay.init();
+
   GameData::resetCoins();
 
-  // Явно очищаем все старые команды перед переустановкой
   inputHandler.clearAllCommands();
 
-  // ИСПРАВКА: перевсоздаём команды с актуальными указателями на менеджеры
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
   inputHandler.setMouseCommand(
@@ -80,7 +79,7 @@ void GameEngine::resetGame() {
       std::make_unique<SpawnTrampolineCommand>(&bonusManager));
 
   state = GameState::PLAYING;
-  std::cerr << "=== ✅ Game reset and started ===" << std::endl;
+  std::cerr << "[GameEngine::resetGame()] end" << std::endl;
 }
 
 void GameEngine::update(float dt) {
@@ -98,93 +97,77 @@ void GameEngine::update(float dt) {
 }
 
 void GameEngine::updateMenu() {
-  // TODO: Добавить экран меню с кнопкой "START"
-  // На данный момент сразу начинаем игру
   resetGame();
   state = GameState::PLAYING;
 }
 
 void GameEngine::updatePlaying(float dt) {
-  // Обновляем игровые объекты
-  player.update(dt, screenWidth);
+    player.update(dt, screenWidth);
   platformManager.update(dt, player);
   enemyManager.update(dt, screenWidth, camera, player.y);
   projectileManager.update(dt, camera);
   bonusManager.update(screenWidth, screenHeight, camera, player);
 
-  // Проверяем столкновение с врагом
   EnemyCollision collisionResult = enemyManager.checkPlayerCollision(player);
   if (collisionResult == EnemyCollision::HIT) {
-    std::cerr << "❌ GAME OVER: Player collided with enemy" << std::endl;
+    std::cerr << "[GameEngine::updatePlaying()] GAME OVER" << std::endl;
     // state = GameState::GAME_OVER;
     return;
   } else if (collisionResult == EnemyCollision::STOMP) {
-    std::cerr << "✓ Player stomped on enemy" << std::endl;
+    std::cerr << "[GameEngine::updatePlaying()] Player stomped on enemy"
+              << std::endl;
     player.jump();
   }
-
-  // Проверяем падение игрока
+  std::cerr << "[GameEngine::2]" << std::endl;
   if (!player.alive) {
-    std::cerr << "❌ GAME OVER: Player died (fell off screen)" << std::endl;
+    std::cerr << "[GameEngine::updatePlaying()] GAME OVER: Player died (fell "
+                 "off screen)"
+              << std::endl;
     state = GameState::GAME_OVER;
     return;
   }
-
-  // Обновляем камеру
+  std::cerr << "[GameEngine::3]" << std::endl;
   camera.update(player.y, screenHeight);
 
-  // Проверяем столкновения снарядов с врагами
   for (auto& pr : projectileManager.getProjectiles()) {
     if (!pr.active) continue;
-    if (enemyManager.checkProjectileCollision(pr.left(), pr.top(),
-                                              pr.right() - pr.left(),
-                                              pr.bottom() - pr.top())) {
+    Object projectileObj{pr.left(), pr.top(), pr.right() - pr.left(),
+                         pr.bottom() - pr.top()};
+
+    if (enemyManager.checkProjectileCollision(projectileObj)) {
       pr.active = false;
     }
   }
+  std::cerr << "[GameEngine::4]" << std::endl;
 }
 
 void GameEngine::updateGameOver() {
-  // В состоянии игрок падает, обновляем камеру для финальной сцены
+  // TODO: Добавить логику для экрана Game Over (например, ждать нажатия кнопки
+  // для перезапуска)
   camera.update(player.y, screenHeight);
 }
 
 void GameEngine::render() {
   switch (state) {
     case GameState::MENU:
-      renderMenu();
+      // renderMenu();
       break;
     case GameState::PLAYING:
-      renderPlaying();
+      renderGame();
       break;
     case GameState::GAME_OVER:
-      renderGameOver();
+      // renderGameOver();
       break;
   }
 }
 
-void GameEngine::renderMenu() {
-  // TODO: Добавить экран меню
-}
-
-void GameEngine::renderGameWorld() {
-  // Общий рендер все игровых объектов
+void GameEngine::renderGame() {
   player.render(camera);
   platformManager.render(camera);
   enemyManager.render(camera);
   projectileManager.render(camera);
   bonusManager.render(camera);
 
-  // Обновляем и отображаем счет монет
   scoreDisplay.setScore(GameData::getCoins());
   scoreDisplay.render();
-}
-
-void GameEngine::renderPlaying() { renderGameWorld(); }
-
-void GameEngine::renderGameOver() {
-  // Показываем финальную сцену
-  renderGameWorld();
-
-  // TODO: Добавить экран Game Over с счетом и кнопкой "RETRY"
 }
