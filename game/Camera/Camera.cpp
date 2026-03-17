@@ -9,8 +9,11 @@ void Camera::update(float playerY, int screenHeight) {
   float curScreenY = playerY - offsetY;
   if (curScreenY < desiredScreenY) {
     offsetY = playerY - desiredScreenY;
-    std::cerr << "[Camera::update] offsetY: " << " -> " << offsetY << std::endl;
+    // std::cerr << "[Camera::update] offsetY: " << " -> " << offsetY <<
+    // std::endl;
   }
 }
 
 float Camera::toScreenY(float worldY) const { return worldY - offsetY; }
+
+float Camera::toWorldY(float screenY) const { return screenY + offsetY; }

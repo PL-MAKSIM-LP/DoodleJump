@@ -17,8 +17,7 @@ class ProjectileManager {
   void render(const Camera& camera);
   void clear();
 
-  void shoot(float x, float y, float velX = 0.0f,
-             float velY = ProjectileConfig::DEFAULT_VELY);
+  void shoot(float x, float y, float targetX, float targetY);
 
   std::vector<Projectile>& getProjectiles() { return projectiles; }
 

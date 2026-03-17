@@ -47,13 +47,13 @@ class GameEngine {
 
   PlatformManager platformManager;
   ProjectileManager projectileManager;
-  BonusManager bonusManager;
   EnemyManager enemyManager;
 
   InputHandler inputHandler;
   Camera camera;
   Player player;
   ScoreDisplay scoreDisplay;
+  BonusManager bonusManager;
 
   void updateMenu();
   void updatePlaying(float dt);

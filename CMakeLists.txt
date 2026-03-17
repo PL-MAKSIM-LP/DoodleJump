@@ -3,6 +3,10 @@ project(DoodleJump)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Debug flags - добавляем для видимости переменных в дебаггере
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
+
 # Option to enable AddressSanitizer build
 option(ENABLE_ASAN "Enable AddressSanitizer (adds -fsanitize=address)" OFF)
 if(ENABLE_ASAN)
@@ -11,7 +15,7 @@ if(ENABLE_ASAN)
         set(ASAN_FLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ASAN_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ASAN_FLAGS}")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fsanitize=undefined")
     else()
         message(WARNING "ENABLE_ASAN set but compiler is not GCC/Clang; skipping flags")
     endif()

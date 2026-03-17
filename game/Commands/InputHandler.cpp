@@ -34,7 +34,7 @@ void InputHandler::handleMousePressed(FRMouseButton button, Player& player) {
   auto it = mouseButtons.find(button);
   if (it != mouseButtons.end()) {
     std::cerr << "[InputHandler FRMouseButton] Mouse pressed" << std::endl;
-    it->second->execute(player);
+    it->second->execute(player, lastMouseX, lastMouseY);
   }
 }
 

@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "../framework/Framework.h"
@@ -69,6 +70,8 @@ class MyFramework : public Framework {
   virtual void onMouseMove(int x, int y, int xrelative, int yrelative) {
     mouse.x = x;
     mouse.y = y;
+    gameEngine.getInputHandler().updateMousePosition(static_cast<float>(x),
+                                                     static_cast<float>(y));
   }
 
   virtual void onMouseButtonClick(FRMouseButton button, bool isReleased) {
@@ -121,5 +124,6 @@ int main(int argc, char* argv[]) {
     h = GameConfig::DEFAULT_HEIGHT;
   }
 
-  return run(new MyFramework(w, h));
+  auto framework = std::make_unique<MyFramework>(w, h);
+  return run(framework.get());
 }

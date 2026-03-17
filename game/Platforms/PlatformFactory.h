@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
 #include "Platform.h"
 
@@ -9,6 +10,7 @@ class PlatformFactory {
  public:
   PlatformFactory();
   ~PlatformFactory();
+  void initialize();
 
   std::unique_ptr<IPlatform> create(int x, int y, PlatformType type);
 
@@ -35,4 +37,5 @@ class PlatformFactory {
 
   std::array<Sprite*, BreakablePlatformConfig::MAX_BREAK_SPRITES>
       breakAnimationSprites = {};
+  bool initialized = false;
 };

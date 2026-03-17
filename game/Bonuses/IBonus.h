@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "../../framework/Framework.h"
 #include "../Camera/Camera.h"
 #include "../Player/Player.h"
@@ -39,6 +41,7 @@ class IBonus {
     this->sprite = spr;
     this->type = t;
   }
+
   bool isAlive() const { return alive; }
   float left() const { return x; }
   float right() const { return x + w; }

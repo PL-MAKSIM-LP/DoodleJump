@@ -35,7 +35,6 @@ void EnemyManager::init(int w, int h) {
 
 void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
                           float playerY) {
-  std::cerr << "[EnemyManager::update] " << std::endl;
   updateEnemiesFromCamera(dt, screenWidth_, camera);
   spawnMissingEnemies(playerY);
   updateSpawnLogic(playerY);
@@ -65,7 +64,6 @@ void EnemyManager::updateEnemiesFromCamera(float dt, int screenWidth,
 }
 
 void EnemyManager::cleanupDeadEnemies(const Camera &camera) {
-  std::cerr << "[EnemyManager::cleanupDeadEnemies]" << std::endl;
   enemies.erase(
       std::remove_if(enemies.begin(), enemies.end(),
                      [&](const std::unique_ptr<IEnemy> &e) {

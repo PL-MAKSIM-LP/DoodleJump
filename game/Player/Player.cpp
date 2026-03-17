@@ -98,7 +98,7 @@ void Player::stopMoveLeft() {
 
 void Player::startMoveRight() {
   movingRight = true;
-  std::cerr << "➡️[Player::startMoveRight]" << std::endl;
+  std::cerr << "[Player::startMoveRight]" << std::endl;
 };
 void Player::stopMoveRight() {
   movingRight = false;

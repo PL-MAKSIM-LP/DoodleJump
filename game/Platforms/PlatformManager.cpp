@@ -13,6 +13,9 @@ void PlatformManager::init(int screenWidth_, int screenHeight_) {
   screenWidth = screenWidth_;
   screenHeight = screenHeight_;
 
+  // Initialize factory sprites after screen and renderer should be ready
+  factory.initialize();
+
   float y = screenHeight - PlatformManagerConfig::START_SPAWN_HEIGHT;
   lastPlatformMaxY = y;
 
@@ -23,7 +26,14 @@ void PlatformManager::init(int screenWidth_, int screenHeight_) {
 }
 
 void PlatformManager::render(const Camera& camera) {
+  // std::cerr << "[PlatformManager::render] count=" << platforms.size()
+  //           << std::endl;
+  int idx = 0;
   for (const auto& p : platforms) {
+    float screenY = camera.toScreenY(p->y);
+    // std::cerr << "  p[" << idx++ << "] x=" << p->x << " y=" << p->y
+    //           << " screenY=" << screenY << " active=" << p->active <<
+    //           std::endl;
     if (p->active) p->render(camera);
   }
 }
@@ -33,12 +43,19 @@ void PlatformManager::update(float dt, Player& player) {
     if (p->active) p->update(dt, screenHeight);
   }
 
-  float removeY = player.y + screenHeight + EnemyConfig::REMOVE_SCREEN_PADDING;
-  int beforeSize = platforms.size();
+  // Remove platforms that are far below the player (off-screen below)
+  // Use minY to account for moving platforms that swing up/down
+  float minRemovalY =
+      player.y + screenHeight + EnemyConfig::REMOVE_SCREEN_PADDING;
+
   platforms.erase(std::remove_if(platforms.begin(), platforms.end(),
                                  [&](const std::unique_ptr<IPlatform>& p) {
+                                   // Remove inactive platforms (e.g., broken
+                                   // breakable platforms)
                                    if (!p->active) return true;
-                                   if (p->y > removeY) {
+                                   // Remove platforms that fall off-screen
+                                   // below
+                                   if (p->y > minRemovalY) {
                                      return true;
                                    }
                                    return false;
@@ -50,11 +67,16 @@ void PlatformManager::update(float dt, Player& player) {
       p->onCollide(player);
     }
   }
-  spawnNextPlatform();
+  spawnNextPlatform(player.y);
 }
 
-void PlatformManager::spawnNextPlatform() {
-  std::cerr << "[PlatformManager::spawnNextPlatform] start" << std::endl;
+void PlatformManager::spawnNextPlatform(float playerY) {
+  float desiredStart = playerY - PlatformManagerConfig::START_SPAWN_HEIGHT;
+  if (lastPlatformMaxY > desiredStart) {
+    lastPlatformMaxY = desiredStart;
+  }
+
+  float spawnLimitY = playerY - static_cast<float>(screenHeight) * 2.0f;
   while (platforms.size() < PlatformManagerConfig::MAX_ACTIVE_PLATFORMS) {
     float spawnY = computeSpawnY();
     PlatformType type = selectPlatformType(spawnY);
@@ -69,7 +91,6 @@ void PlatformManager::spawnNextPlatform() {
              retries > 0);
     spawn(spawnX, spawnY, type);
   }
-  std::cerr << "[PlatformManager::spawnNextPlatform] end" << std::endl;
 }
 
 float PlatformManager::computeSpawnX() {
@@ -89,40 +110,22 @@ float PlatformManager::computeSpawnY() {
   float mediumThreshold =
       static_cast<float>(screenHeight) - PlatformManagerConfig::MEDIUM_OFFSET;
 
-  float gap =
+  float minGap =
       (lastPlatformMaxY > easyThreshold)     ? PlatformManagerConfig::LOW_GAP
       : (lastPlatformMaxY > mediumThreshold) ? PlatformManagerConfig::MID_GAP
                                              : PlatformManagerConfig::HIGH_GAP;
 
-  gap = std::max(gap, PlayerConfig::JumpHeight + 10.0f);
-
   if (!rng) {
     std::cerr << "[PlatformManager::computeSpawnY] generator is not set!"
               << std::endl;
-    return lastPlatformMaxY - gap;
+    lastPlatformMaxY -= minGap;
+    return lastPlatformMaxY;
   }
 
-  float next = 0.0f;
-  std::cerr
-      << "[PlatformManager::computeSpawnY] PlayerConfig::JumpHeight + 50.0f = "
-      << PlayerConfig::JumpHeight << std::endl;
+  // Sample a gap between minGap and maxGap
+  float sampledGap = std::uniform_real_distribution<float>(0, minGap)(*rng);
 
-  while (true) {
-    next = std::uniform_real_distribution<float>(0.0f, gap)(*rng);
-
-    std::cerr << "[PlatformManager::computeSpawnY] next = " << next
-              << std::endl;
-    if (next >= PlayerConfig::JumpHeight) {
-      break;
-    }
-  }
-
-  lastPlatformMaxY -= next;
-
-  if (lastPlatformMaxY < 0.0f) {
-    std::cerr << " WARNING: Negative spawn Y! lastPlatformMaxY="
-              << lastPlatformMaxY << std::endl;
-  }
+  lastPlatformMaxY -= sampledGap;
 
   return lastPlatformMaxY;
 }

@@ -5,16 +5,48 @@
 #include <iostream>
 
 #include "../../framework/Framework.h"
+#include "../Platforms/PlatformManager.h"
 #include "core/Constants.h"
 
+BonusManager::BonusManager() {}
 void BonusManager::update(int screenWidth, int screenHeight,
                           const Camera& camera, const Player& player) {
-  coins.erase(std::remove_if(coins.begin(), coins.end(),
-                             [&player](const std::unique_ptr<IBonus>& b) {
-                               return !b->isAlive() ||
-                                      b->top() < player.y + 500;
-                             }),
-              coins.end());
+  std::cerr << "[BonusManager::update] start" << spawnedTestCoin << std::endl;
+  if (!spawnedTestCoin) {
+    spawnCoin(100, 100);
+    spawnedTestCoin = true;
+  }
+
+  for (auto& coin : coins) {
+    if (coin->isAlive()) {
+      coin->checkCollision(const_cast<Player&>(player));
+    }
+  }
+
+  coins.erase(
+      std::remove_if(coins.begin(), coins.end(),
+                     [&camera, screenHeight](const std::unique_ptr<IBonus>& b) {
+                       // std::cerr
+                       // << "[BonusManager::update] remove_if lambda called,
+                       // alive="
+                       // << b->isAlive() << std::endl;
+                       if (!b->isAlive()) {
+                         // std::cerr << "[BonusManager::update] Removing dead
+                         // coin"
+                         //           << std::endl;
+                         return true;
+                       }
+                       float screenY = camera.toScreenY(b->top());
+                       if (screenY > screenHeight) {
+                         // std::cerr
+                         //     << "[BonusManager::update] Removing coin
+                         //     off-screen (screenY="
+                         //     << screenY << ")" << std::endl;
+                         return true;
+                       }
+                       return false;
+                     }),
+      coins.end());
 
   if (trampoline && !trampoline->isAlive()) {
     std::cerr << "Resetting trampoline" << std::endl;
@@ -51,21 +83,21 @@ void BonusManager::update(int screenWidth, int screenHeight,
       spawnedTrampoline = false;
     }
   }
-
-  if (coins.size() < coinCapacity) {
-    int x = rand() % (screenWidth - BonusConfig::COIN_W);
-    float rawY = player.y - 600.0f - static_cast<float>(rand() % screenHeight);
-    int coinY = static_cast<int>(rawY);
-    spawnCoin(x, coinY);
-  }
 }
 
 void BonusManager::spawnCoin(int x, int y) {
+  std::cerr << "[BonusManager::spawnCoin] Creating coin at x=" << x
+            << " y=" << y << std::endl;
   auto coin = bonusFactory.create(x, y, BonusType::COIN);
+  std::cerr << "[BonusManager::spawnCoin] coin pointer=" << coin.get()
+            << std::endl;
   if (coin) {
-    std::cerr << "BonusManager::spawnCoin at x=" << x << " y=" << y
+    std::cerr << "[BonusManager::spawnCoin] SUCCESS at x=" << x << " y=" << y
               << std::endl;
     coins.push_back(std::move(coin));
+  } else {
+    std::cerr << "[BonusManager::spawnCoin] FAILED - coin is nullptr"
+              << std::endl;
   }
 }
 
@@ -79,12 +111,6 @@ void BonusManager::spawnTrampoline(int x, int y) {
   } else {
     std::cerr << "[BonusManager::spawnTrampoline] Failed to create"
               << std::endl;
-  }
-
-  auto trampoline = bonusFactory.create(x, y, BonusType::TRAMPOLINE);
-  if (trampoline) {
-    this->trampoline = std::move(trampoline);
-    timeSinceLastTrampoline = getTickCount();
   }
 }
 
@@ -104,7 +130,4 @@ void BonusManager::clear() {
   std::cerr << "[BonusManager::clear] Cleared " << std::endl;
 
   coins.clear();
-  trampoline.reset();
-  spawnedTrampoline = false;
-  timeSinceLastTrampoline = 0;
 }

@@ -33,12 +33,14 @@ class IPlatform {
   float right() const { return x + w; }
   float top() const { return y; }
   float bottom() const { return y + h; }
+  int getHeight() const { return h; }
 
   bool isColliding(const Player& player) const;
 
   virtual ~IPlatform() {
-    std::cerr << "platform destroyed " << static_cast<int>(type) << std::endl;
-    if (sprite) destroySprite(sprite);
+    // Sprites are owned by PlatformFactory, not by individual platforms.
+    // Do not delete them here.
+    sprite = nullptr;
   }
 
  protected:

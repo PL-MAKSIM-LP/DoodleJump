@@ -10,7 +10,7 @@ class Projectile {
   float y = 0.0f;
 
   bool active = true;
-
+  Projectile();
   void update(float dt);
   void render(const Camera& camera, Sprite* sprite);
 
@@ -20,6 +20,7 @@ class Projectile {
   float bottom() const { return y + h; }
 
  public:
+  unsigned int spawnTime = 0;
   float velX = 0.0f;
   float velY = ProjectileConfig::DEFAULT_VELY;
 

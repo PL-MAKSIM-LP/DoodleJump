@@ -2,6 +2,7 @@
 #include "ProjectileManager.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 #include "core/Constants.h"
@@ -19,11 +20,7 @@ ProjectileManager::~ProjectileManager() {
 
 void ProjectileManager::init() {
   std::cerr << "[ProjectileManager::init]" << std::endl;
-  sprite = createSprite("../data/projectile.png");
-  if (!sprite) {
-    std::cerr << "[ProjectileManager::init] Load Sprite" << std::endl;
-    sprite = createSprite("../data/01-Breakout-Tiles.png");
-  }
+  sprite = createSprite("../sprites/projectile.png");
   if (sprite) {
     setSpriteSize(sprite, ProjectileConfig::W, ProjectileConfig::H);
     std::cerr << "[ProjectileManager::init] Sprite loaded" << std::endl;
@@ -60,8 +57,28 @@ void ProjectileManager::render(const Camera &camera) {
   }
 }
 
-void ProjectileManager::shoot(float x, float y, float velX, float velY) {
+void ProjectileManager::shoot(float x, float y, float targetX, float targetY) {
   std::cerr << "[ProjectileManager::shoot]" << std::endl;
+  std::cerr << "  start position: x=" << x << ", y=" << y << std::endl;
+  std::cerr << "  target position: targetX=" << targetX
+            << ", targetY=" << targetY << std::endl;
+
+  float dirX = targetX - x;
+  float dirY = targetY - y;
+
+  float len = std::sqrt(dirX * dirX + dirY * dirY);
+
+  float velX = 0.0f;
+  float velY = ProjectileConfig::DEFAULT_VELY;
+
+  if (len > 0.01f) {
+    velX = (dirX / len) * ProjectileConfig::SHOOT_SPEED;
+    velY = (dirY / len) * ProjectileConfig::SHOOT_SPEED;
+  }
+
+  std::cerr << "  calculated velocity: velX=" << velX << ", velY=" << velY
+            << std::endl;
+
   Projectile p;
   p.x = x;
   p.y = y;

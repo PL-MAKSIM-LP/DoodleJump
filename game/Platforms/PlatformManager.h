@@ -37,7 +37,7 @@ class PlatformManager {
   }
 
  private:
-  void spawnNextPlatform();
+  void spawnNextPlatform(float playerY);
   float computeSpawnY();
   float computeSpawnX();
   bool platformsOverlap(float x, float y, int w, int h) const;

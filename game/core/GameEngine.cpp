@@ -17,16 +17,20 @@ GameEngine::GameEngine(int width, int height)
       screenHeight(height),
       rng(static_cast<unsigned int>(std::time(nullptr))) {}
 
-GameEngine::~GameEngine() {}
+GameEngine::~GameEngine() {
+  platformManager.clear();
+  enemyManager.clear();
+  bonusManager.clear();
+  projectileManager.clear();
+}
 
 void GameEngine::init() {
   std::cerr << "[GameEngine::init()] start" << std::endl;
 
+  auto shootCmd = std::make_unique<ShootCommand>(&projectileManager, &camera);
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
-  inputHandler.setMouseCommand(
-      FRMouseButton::LEFT,
-      std::make_unique<ShootCommand>(&projectileManager, &enemyManager));
+  inputHandler.setMouseCommand(FRMouseButton::LEFT, std::move(shootCmd));
   inputHandler.setMouseCommand(
       FRMouseButton::RIGHT,
       std::make_unique<SpawnTrampolineCommand>(&bonusManager));
@@ -37,6 +41,8 @@ void GameEngine::init() {
   enemyManager.init(screenWidth, screenHeight);
   enemyManager.setPlatformManager(&platformManager);
   enemyManager.setRandomGenerator(rng);
+  bonusManager.setPlatformManager(&platformManager);
+  bonusManager.setRandomGenerator(rng);
   projectileManager.init();
 
   state = GameState::MENU;
@@ -68,16 +74,8 @@ void GameEngine::resetGame() {
 
   GameData::resetCoins();
 
-  inputHandler.clearAllCommands();
-
-  inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
-  inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
-  inputHandler.setMouseCommand(
-      FRMouseButton::LEFT,
-      std::make_unique<ShootCommand>(&projectileManager, &enemyManager));
-  inputHandler.setMouseCommand(
-      FRMouseButton::RIGHT,
-      std::make_unique<SpawnTrampolineCommand>(&bonusManager));
+  // Don't recreate commands on reset—reuse the ones created in init()
+  // This avoids allocating/deallocating command objects repeatedly
 
   state = GameState::PLAYING;
   std::cerr << "[GameEngine::resetGame()] end" << std::endl;
@@ -119,7 +117,7 @@ void GameEngine::updatePlaying(float dt) {
               << std::endl;
     player.jump();
   }
-  std::cerr << "[GameEngine::2]" << std::endl;
+
   if (!player.alive) {
     std::cerr << "[GameEngine::updatePlaying()] GAME OVER: Player died (fell "
                  "off screen)"
@@ -127,7 +125,6 @@ void GameEngine::updatePlaying(float dt) {
     state = GameState::GAME_OVER;
     return;
   }
-  std::cerr << "[GameEngine::3]" << std::endl;
   camera.update(player.y, screenHeight);
 
   for (auto& pr : projectileManager.getProjectiles()) {
@@ -139,7 +136,6 @@ void GameEngine::updatePlaying(float dt) {
       pr.active = false;
     }
   }
-  std::cerr << "[GameEngine::4]" << std::endl;
 }
 
 void GameEngine::updateGameOver() {

@@ -12,6 +12,11 @@ Sprite* PlatformFactory::loadAndSetupSprite(const char* path) {
   if (!path) return nullptr;
 
   Sprite* sprite = createSprite(path);
+
+  std::cerr
+      << "[PlatformFactory::loadAndSetupSprite] Loading sprite from path: "
+      << path << " result: " << (sprite ? "success" : "failure") << std::endl;
+
   if (sprite) {
     setSpriteSize(sprite, PlatformConfig::WIDTH, PlatformConfig::HEIGHT);
     return sprite;
@@ -57,8 +62,16 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
 }
 
 PlatformFactory::PlatformFactory() {
-  // TODO
   std::cerr << "[PlatformFactory::PlatformFactory]" << std::endl;
+}
+
+void PlatformFactory::initialize() {
+  if (initialized) {
+    std::cerr << "[PlatformFactory::initialize] already initialized, skipping"
+              << std::endl;
+    return;
+  }
+  std::cerr << "[PlatformFactory::initialize] loading sprites" << std::endl;
   normalSprite = loadAndSetupSprite(PlatformConfig::SPRITE_NORMAL_PATH);
   movingHorizontalSprite =
       loadAndSetupSprite(PlatformConfig::SPRITE_MOVING_H_PATH);
@@ -67,6 +80,7 @@ PlatformFactory::PlatformFactory() {
   breakableSprite = loadAndSetupSprite(PlatformConfig::SPRITE_BREAKABLE_PATH);
 
   initializeBreakAnimationSprites();
+  initialized = true;
 }
 
 PlatformFactory::~PlatformFactory() {

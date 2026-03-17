@@ -9,7 +9,7 @@ constexpr int MAX_HEIGHT = 1080;
 }  // namespace GameConfig
 
 namespace PlayerConfig {
-constexpr int JumpHeight = 400;
+constexpr int JumpHeight = 300;
 
 }  // namespace PlayerConfig
 namespace CameraConfig {
@@ -35,9 +35,9 @@ constexpr float BASE_OFFSET = 500.0f;
 constexpr float EASY_OFFSET = 500.0f;
 constexpr float MEDIUM_OFFSET = 2000.0f;
 constexpr float HARD_OFFSET = 4000.0f;
-constexpr float LOW_GAP = 50.0f;
-constexpr float MID_GAP = 80.0f;
-constexpr float HIGH_GAP = 100.0f;
+constexpr float LOW_GAP = 150.0f;
+constexpr float MID_GAP = 200.0f;
+constexpr float HIGH_GAP = 250.0f;
 constexpr float RAND_R_MIN = 0.0f;
 constexpr float RAND_R_MAX = 1.0f;
 
@@ -120,6 +120,8 @@ constexpr int H = 20;
 constexpr float DEFAULT_VELY = -600.0f;
 constexpr float SHOOT_SPEED = 700.0f;
 constexpr float OFFSCREEN_PADDING = 200.0f;
+
+constexpr unsigned int SHOOT_LIFETIME = 1000;  // milliseconds
 }  // namespace ProjectileConfig
 
 // ========== BONUS CONFIG ==========
