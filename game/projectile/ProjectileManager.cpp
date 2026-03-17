@@ -8,7 +8,16 @@
 
 ProjectileManager::ProjectileManager() {}
 
-ProjectileManager::~ProjectileManager() {}
+ProjectileManager::~ProjectileManager() {
+  // Clean up sprite resource
+  if (sprite) {
+    destroySprite(sprite);
+    sprite = nullptr;
+  }
+  projectiles.clear();
+  std::cerr << "🟢 [ProjectileManager::~ProjectileManager] Cleaned up"
+            << std::endl;
+}
 
 void ProjectileManager::init() {
   std::cerr << "🟢 [ProjectileManager::init]" << std::endl;

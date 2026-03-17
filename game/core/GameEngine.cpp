@@ -12,7 +12,8 @@
 #include "../Platforms/BreakablePlatform.h"
 
 GameEngine::GameEngine(int width, int height)
-    : screenWidth(width), screenHeight(height),
+    : screenWidth(width),
+      screenHeight(height),
       rng(static_cast<unsigned int>(std::time(nullptr))) {}
 
 GameEngine::~GameEngine() {}
@@ -64,6 +65,9 @@ void GameEngine::resetGame() {
   scoreDisplay = ScoreDisplay();
   scoreDisplay.init();
   GameData::resetCoins();
+
+  // Явно очищаем все старые команды перед переустановкой
+  inputHandler.clearAllCommands();
 
   // ИСПРАВКА: перевсоздаём команды с актуальными указателями на менеджеры
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());

@@ -14,12 +14,26 @@ EnemyFactory::EnemyFactory()
     : groundSprite(nullptr), flyingFramesInitialized(false) {}
 
 EnemyFactory::~EnemyFactory() {
-  if (groundSprite) destroySprite(groundSprite);
-  for (auto f : flyingFrames) {
-    if (f) destroySprite(f);
+  // Очищаем groundedWalkFrames ПЕРЕД удалением groundSprite
+  // поскольку они могут содержать ссылки на groundSprite
+  groundedWalkFrames.clear();
+
+  // Теперь удаляем groundSprite (на который могли ссылаться groundedWalkFrames)
+  if (groundSprite) {
+    destroySprite(groundSprite);
+    groundSprite = nullptr;
   }
-  // Don't destroy groundedWalkFrames - they reference groundSprite which is
-  // already destroyed
+
+  // Удаляем flying frames (они независимые спрайты)
+  for (auto f : flyingFrames) {
+    if (f) {
+      destroySprite(f);
+    }
+  }
+  flyingFrames.clear();
+
+  std::cerr << "🟢 [EnemyFactory::~EnemyFactory] Cleaned up all sprites"
+            << std::endl;
 }
 
 std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {

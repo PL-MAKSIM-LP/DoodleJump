@@ -47,4 +47,6 @@ void BreakablePlatform::onCollide(Player& player) {
   breakTimer = 0.0f;
 
   player.jump();
+  std::cerr << "⬆️  [BreakablePlatform] Player jumped off broken platform"
+            << std::endl;
 }

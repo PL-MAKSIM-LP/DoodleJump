@@ -9,7 +9,9 @@ Trampoline::Trampoline() {
   h = BonusConfig::TRAMPOLINE_H;
 }
 
-void Trampoline::update(float, int) {}
+void Trampoline::update(float, int) {
+  // No significant state changes to log
+}
 
 void Trampoline::applyEffect(Player& player) {
   std::cerr << "🪂 [Trampoline::applyEffect] Boost jump" << std::endl;

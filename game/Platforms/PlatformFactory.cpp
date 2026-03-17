@@ -46,15 +46,16 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
       std::cerr << "🟢 [PlatformFactory] Creating BREAKABLE at x=" << x
                 << " y=" << y << std::endl;
       auto p = std::make_unique<BreakablePlatform>();
-      p->setFactory(const_cast<PlatformFactory*>(this));  // Pass factory reference
+      p->setFactory(
+          const_cast<PlatformFactory*>(this));  // Pass factory reference
       p->init(x, y, spr, type);
       return p;
     }
 
     case PlatformType::NORMAL:
     default: {
-      std::cerr << "🟢 [PlatformFactory] Creating NORMAL at x=" << x << " y="
-                << y << std::endl;
+      std::cerr << "🟢 [PlatformFactory] Creating NORMAL at x=" << x
+                << " y=" << y << std::endl;
       auto p = std::make_unique<NormalPlatform>();
       p->init(x, y, spr, PlatformType::NORMAL);
       return p;
@@ -75,14 +76,38 @@ PlatformFactory::PlatformFactory() {
 }
 
 PlatformFactory::~PlatformFactory() {
+  // Clean up main platform sprites
+  if (normalSprite) {
+    destroySprite(normalSprite);
+    normalSprite = nullptr;
+  }
+
+  if (movingHorizontalSprite) {
+    destroySprite(movingHorizontalSprite);
+    movingHorizontalSprite = nullptr;
+  }
+
+  if (movingVerticalSprite) {
+    destroySprite(movingVerticalSprite);
+    movingVerticalSprite = nullptr;
+  }
+
+  if (breakableSprite) {
+    destroySprite(breakableSprite);
+    breakableSprite = nullptr;
+  }
+
   // Clean up break animation sprites
   clearBreakAnimationSprites();
+
+  std::cerr << "🟢 [PlatformFactory::~PlatformFactory] Cleaned up all sprites"
+            << std::endl;
 }
 
 void PlatformFactory::initializeBreakAnimationSprites() {
   for (int i = 0; i < BreakablePlatformConfig::MAX_BREAK_SPRITES; ++i) {
-    breakAnimationSprites[i] = createSprite(
-        BreakablePlatformConfig::SPRITE_BREAK_PATHS[i]);
+    breakAnimationSprites[i] =
+        createSprite(BreakablePlatformConfig::SPRITE_BREAK_PATHS[i]);
     if (breakAnimationSprites[i]) {
       setSpriteSize(breakAnimationSprites[i], PlatformConfig::WIDTH,
                     PlatformConfig::HEIGHT);

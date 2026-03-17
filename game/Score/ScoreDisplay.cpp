@@ -5,47 +5,64 @@
 #include <string>
 
 ScoreDisplay::~ScoreDisplay() {
-  // Очищаем спрайты цифр
-  for (int i = 0; i < 10; i++) {
-    if (digitSprites[i]) {
-      destroySprite(digitSprites[i]);
-    }
+  // Очищаем спрайт цифр (только один спрайт, остальные NULL)
+  if (digitSprites[0]) {
+    destroySprite(digitSprites[0]);
+    digitSprites[0] = nullptr;
+  }
+  // Обнулить все остальные для безопасности
+  for (int i = 1; i < 10; i++) {
+    digitSprites[i] = nullptr;
   }
 }
 
 void ScoreDisplay::init() {
   std::cerr << "🟢 [ScoreDisplay::init]" << std::endl;
-  // Загружаем спрайты для цифр (0-9)
-  // Используем один файл спрайта где все цифры рядом
+  // Загружаем один спрайт для всех цифр (0-9)
   const char* digitFile = "../data/digits.png";
 
-  Sprite* allDigits = createSprite(digitFile);
+  // Загружаем один спрайт, который содержит все цифры
+  digitSprites[0] = createSprite(digitFile);
 
-  if (allDigits) {
+  if (digitSprites[0]) {
     // Предполагаем что спрайты цифр имеют размер примерно 20x30
-    setSpriteSize(allDigits, 200, 30);  // 10 цифр по 20px каждая
+    setSpriteSize(digitSprites[0], 200, 30);  // 10 цифр по 20px каждая
 
-    // Копируем одиночный спрайт для каждой цифры
-    for (int i = 0; i < 10; i++) {
-      digitSprites[i] = allDigits;
+    // Все остальные индексы указывают на NULL, так как мы используем subregions
+    for (int i = 1; i < 10; i++) {
+      digitSprites[i] = nullptr;
     }
-    std::cerr << "✅ [ScoreDisplay] Digits loaded" << std::endl;
+    std::cerr << "✅ [ScoreDisplay] Digits loaded (single sprite for all)"
+              << std::endl;
   } else {
     std::cerr << "❌ [ScoreDisplay] Failed to load digits sprite" << std::endl;
+    // Обнулить все спрайты в случае ошибки
+    for (int i = 0; i < 10; i++) {
+      digitSprites[i] = nullptr;
+    }
   }
 }
 
 void ScoreDisplay::renderDigit(int digit, int x, int y) {
-  if (digit < 0 || digit > 9) return;
+  if (digit < 0 || digit > 9) {
+    std::cerr << "⚠️  [ScoreDisplay::renderDigit] Invalid digit: " << digit
+              << std::endl;
+    return;
+  }
 
   if (digitSprites[digit]) {
     drawSprite(digitSprites[digit], x, y);
   }
+  // No logging for valid digits - render is called every frame
 }
 
 void ScoreDisplay::renderNumber(int number, int x, int y) {
   // Преобразуем число в строку цифр и отображаем
-  if (number < 0) number = 0;
+  if (number < 0) {
+    std::cerr << "⚠️  [ScoreDisplay::renderNumber] Negative number: " << number
+              << std::endl;
+    number = 0;
+  }
 
   std::string numStr = std::to_string(number);
   int digitWidth = 20;  // Ширина одной цифры
@@ -54,6 +71,7 @@ void ScoreDisplay::renderNumber(int number, int x, int y) {
     int digit = numStr[i] - '0';
     renderDigit(digit, x + (i * digitWidth), y);
   }
+  // No logging for valid numbers - render is called every frame
 }
 
 void ScoreDisplay::render() {

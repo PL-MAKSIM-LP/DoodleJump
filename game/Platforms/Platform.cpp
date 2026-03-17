@@ -8,6 +8,7 @@ void IPlatform::render(const Camera& camera) {
     float screenY = camera.toScreenY(y);
     drawSprite(this->sprite, x, static_cast<int>(screenY));
   }
+  // No logging - render is called every frame for every platform
 }
 
 void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {

@@ -15,4 +15,6 @@ void Camera::update(float playerY, int screenHeight) {
   }
 }
 
-float Camera::toScreenY(float worldY) const { return worldY - offsetY; }
+float Camera::toScreenY(float worldY) const {
+  return worldY - offsetY;  // No logging - called every frame for every entity
+}

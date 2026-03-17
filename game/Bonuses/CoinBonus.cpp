@@ -10,10 +10,12 @@ CoinBonus::CoinBonus() {
   h = BonusConfig::COIN_H;
 }
 
-void CoinBonus::update(float, int) {}
+void CoinBonus::update(float, int) {
+  // Coins don't have movement - gravity is handled by BonusManager
+}
 
 void CoinBonus::applyEffect(Player&) {
   GameData::addCoins(CoinsConfig::COIN_VALUE);
-  std::cerr << "💰 [CoinBonus::applyEffect] +coins, total coins=" 
+  std::cerr << "💰 [CoinBonus::applyEffect] +coins, total coins="
             << GameData::getCoins() << std::endl;
 }

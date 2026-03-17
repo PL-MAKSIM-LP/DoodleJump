@@ -73,6 +73,7 @@ void Player::render(const Camera& camera) {
   } else {
     drawSprite(lastSprite, x, static_cast<int>(screenY));
   }
+  // Note: Render is called every frame, so no frequent logging to avoid spam
 }
 
 void Player::jump(float scale) {
@@ -81,8 +82,20 @@ void Player::jump(float scale) {
             << std::endl;
 }
 
-void Player::startMoveLeft() { movingLeft = true; };
-void Player::stopMoveLeft() { movingLeft = false; };
+void Player::startMoveLeft() {
+  movingLeft = true;
+  std::cerr << "⬅️  [Player::startMoveLeft]" << std::endl;
+};
+void Player::stopMoveLeft() {
+  movingLeft = false;
+  std::cerr << "⏹️  [Player::stopMoveLeft]" << std::endl;
+};
 
-void Player::startMoveRight() { movingRight = true; };
-void Player::stopMoveRight() { movingRight = false; };
+void Player::startMoveRight() {
+  movingRight = true;
+  std::cerr << "➡️  [Player::startMoveRight]" << std::endl;
+};
+void Player::stopMoveRight() {
+  movingRight = false;
+  std::cerr << "⏹️  [Player::stopMoveRight]" << std::endl;
+};

@@ -16,4 +16,10 @@ class InputHandler {
 
   void setCommand(FRKey key, std::unique_ptr<ICommand> command);
   void setMouseCommand(FRMouseButton button, std::unique_ptr<ICommand> command);
+
+  // Очистить все команды (для безопасности при переинициализации)
+  void clearAllCommands() {
+    keys.clear();
+    mouseButtons.clear();
+  }
 };
