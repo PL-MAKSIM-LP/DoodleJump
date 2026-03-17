@@ -7,7 +7,7 @@ class FlyingEnemy : public IEnemy {
   std::vector<Sprite*> flyFrames;
   int currentFrameIndex = 0;
   float animationTimer = 0.0f;
-  float frameDuration = 0.12f;  // seconds between frames
+  float frameDuration = 0.12f;
 
  public:
   void setFlyFrames(const std::vector<Sprite*>& frames,

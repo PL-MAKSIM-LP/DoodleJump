@@ -7,12 +7,17 @@
 #include "core/Constants.h"
 #include "core/GameEngine.h"
 
+struct MousePosition {
+  int x, y;
+};
+
 class MyFramework : public Framework {
   int screenWidth;
   int screenHeight;
 
   Sprite* background = nullptr;
   GameEngine gameEngine{screenWidth, screenHeight};
+  MousePosition mouse;
 
   unsigned int lastTick = 0;
 
@@ -47,7 +52,6 @@ class MyFramework : public Framework {
   }
 
   virtual bool Tick() {
-    std::cerr << "[MyFramework::Tick()]" << std::endl;
     unsigned int now = getTickCount();
     float dt = (now - lastTick) / 1000.0f;
     lastTick = now;
@@ -62,7 +66,10 @@ class MyFramework : public Framework {
     return false;
   }
 
-  virtual void onMouseMove(int x, int y, int xrelative, int yrelative) {}
+  virtual void onMouseMove(int x, int y, int xrelative, int yrelative) {
+    mouse.x = x;
+    mouse.y = y;
+  }
 
   virtual void onMouseButtonClick(FRMouseButton button, bool isReleased) {
     if (gameEngine.getState() == GameState::PLAYING) {

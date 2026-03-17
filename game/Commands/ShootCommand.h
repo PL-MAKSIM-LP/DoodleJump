@@ -9,12 +9,17 @@
 
 class ShootCommand : public ICommand {
  public:
-  explicit ShootCommand(ProjectileManager* mgr, EnemyManager* emgr)
-      : mgr(mgr), emgr(emgr) {}
-  virtual void execute(Player& player) override {}
+  explicit ShootCommand(ProjectileManager* mgr) : mgr(mgr) {}
+
+  virtual void execute(Player& player) override {
+    if (mgr) {
+      MousePosition pos = getMousePosition();
+      mgr->shoot(pos);
+    }
+  }
+
   virtual void undo(Player& player) override {}
 
  private:
   ProjectileManager* mgr = nullptr;
-  EnemyManager* emgr = nullptr;
 };

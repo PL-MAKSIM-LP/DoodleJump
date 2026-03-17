@@ -8,7 +8,6 @@ void IPlatform::render(const Camera& camera) {
     float screenY = camera.toScreenY(y);
     drawSprite(this->sprite, x, static_cast<int>(screenY));
   }
-  // No logging - render is called every frame for every platform
 }
 
 void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {
@@ -17,8 +16,6 @@ void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {
   sprite = spr;
   type = t;
   if (sprite) setSpriteSize(sprite, this->w, this->h);
-  std::cerr << "🟢 [Platform::init] type=" << static_cast<int>(t) << " x=" << x
-            << " y=" << y << std::endl;
 }
 
 bool IPlatform::isColliding(const Player& player) const {

@@ -3,6 +3,7 @@
 #include <ctime>
 #include <iostream>
 
+#include "../../framework/Framework.h"
 #include "../Commands/MoveLeftCommand.h"
 #include "../Commands/MoveRightCommand.h"
 #include "../Commands/ShootCommand.h"
@@ -102,7 +103,7 @@ void GameEngine::updateMenu() {
 }
 
 void GameEngine::updatePlaying(float dt) {
-    player.update(dt, screenWidth);
+  player.update(dt, screenWidth);
   platformManager.update(dt, player);
   enemyManager.update(dt, screenWidth, camera, player.y);
   projectileManager.update(dt, camera);
