@@ -36,7 +36,6 @@ class BonusManager {
 
   float lastSpawnY = 0.0f;
   bool firstSpawn = true;
-  bool spawnedTestCoin = false;
 
   unsigned int timeSinceLastTrampoline = 0;
 
