@@ -17,4 +17,8 @@ class EnemyFactory {
   Sprite* groundSprite = nullptr;
   std::vector<Sprite*> flyingFrames;
   bool flyingFramesInitialized = false;
+  std::vector<Sprite*> groundedWalkFrames;
+  bool groundedWalkFramesInitialized = false;
+
+  void initializeGroundedWalkFrames();
 };

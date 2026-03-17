@@ -1,3 +1,4 @@
 #include "NormalPlatform.h"
 
-void NormalPlatform::update(float dt, int screenWidth) {}
+// Empty implementation for now
+// This is a basic platform with no special behavior

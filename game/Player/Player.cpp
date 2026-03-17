@@ -17,8 +17,8 @@ Player::~Player() {
 }
 
 void Player::init(int screenWidth, int screenHeight) {
-  spriteLeft = createSprite("../data/lik-left.png");
-  spriteRight = createSprite("../data/lik-right.png");
+  spriteLeft = createSprite("../sprites/lik-left.png");
+  spriteRight = createSprite("../sprites/lik-right.png");
   lastSprite = spriteLeft;
 
   if (spriteLeft) setSpriteSize(spriteLeft, width, height);

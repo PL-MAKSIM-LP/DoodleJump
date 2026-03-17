@@ -6,8 +6,8 @@
 
 #include "core/Constants.h"
 
-void MovingPlatformHorizontal::update(float dt, int screenWidth) {
-  x += moveDir * moveSpeed * dt;
+void MovingPlatformHorizontal::update(float dt, int screenHeight) {
+  x += moveDir * MovingPlatformConfig::MOVE_SPEED * dt;
   if (x <= minX) {
     x = minX;
     moveDir = 1.0f;

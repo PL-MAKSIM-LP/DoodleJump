@@ -16,9 +16,6 @@ GameEngine::GameEngine(int width, int height)
 GameEngine::~GameEngine() {}
 
 void GameEngine::init() {
-  // Инициализируем кэши спрайтов анимаций
-  BreakablePlatform::initializeAnimationCache();
-
   // Инициализируем input команды
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());

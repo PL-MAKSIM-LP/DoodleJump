@@ -8,8 +8,8 @@
 #include "core/GameEngine.h"
 
 class MyFramework : public Framework {
-  int screenWidth = GameConfig::DEFAULT_WIDTH;
-  int screenHeight = GameConfig::DEFAULT_HEIGHT;
+  int screenWidth;
+  int screenHeight;
 
   Sprite* background = nullptr;
   GameEngine gameEngine{screenWidth, screenHeight};
@@ -17,10 +17,10 @@ class MyFramework : public Framework {
   unsigned int lastTick = 0;
 
  public:
-  MyFramework(int width, int height) {
-    screenWidth = width;
-    screenHeight = height;
-  }
+  MyFramework(int width, int height)
+      : screenWidth(width),
+        screenHeight(height),
+        gameEngine(screenWidth, screenHeight) {}
 
   virtual void PreInit(int& width, int& height, bool& fullscreen) override {
     width = screenWidth;
@@ -29,7 +29,7 @@ class MyFramework : public Framework {
   }
 
   virtual bool Init() {
-    background = createSprite("../data/jungle-bck@2x.png");
+    background = createSprite("../sprites/jungle-bck@2x.png");
     if (background) setSpriteSize(background, screenWidth, screenHeight);
 
     gameEngine.init();

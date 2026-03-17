@@ -1,10 +1,11 @@
 #pragma once
 
+#include <iostream>
+
 #include "../../framework/Framework.h"
 #include "../Camera/Camera.h"
 #include "../Player/Player.h"
 #include "core/Constants.h"
-#include "iostream"
 
 enum class PlatformType {
   NORMAL,
@@ -22,7 +23,7 @@ class IPlatform {
   PlatformType type;
   bool active = true;
 
-  virtual void update(float dt, int screenWidth) = 0;
+  virtual void update(float dt, int screenHeight) = 0;
   virtual void render(const Camera& camera);
   virtual void onCollide(Player& player) { player.jump(); };
   virtual void reset(int x, int y);

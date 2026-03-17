@@ -53,4 +53,23 @@ if(BUILD_TESTING)
     )
 
     add_test(NAME DoodleJumpTests COMMAND DoodleJumpTests)
+    
+    # Все файлы игры кроме game.cpp (который имеет свой main)
+    file(GLOB_RECURSE TEST_GAME_SOURCES "game/**/*.cpp" "game/*.cpp")
+    list(REMOVE_ITEM TEST_GAME_SOURCES "${CMAKE_SOURCE_DIR}/game/game.cpp")
+    
+    add_executable(TestPlatformManager
+        tests/test_platform_manager.cpp
+        ${TEST_GAME_SOURCES}
+    )
+    
+    target_link_libraries(TestPlatformManager
+        ${CMAKE_SOURCE_DIR}/framework/linux/libFrameworkRelease.so
+        SDL2
+        SDL2_image
+    )
+    
+    add_test(NAME TestPlatformManager 
+             COMMAND TestPlatformManager
+             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()

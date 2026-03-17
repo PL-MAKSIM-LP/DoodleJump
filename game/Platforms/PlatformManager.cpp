@@ -12,19 +12,23 @@ PlatformManager::~PlatformManager() { clear(); }
 void PlatformManager::init(int screenWidth_, int screenHeight_) {
   screenWidth = screenWidth_;
   screenHeight = screenHeight_;
-  xDist = std::uniform_int_distribution<int>(
-      0, std::max(0, screenWidth - PlatformConfig::WIDTH));
 
-  float y = screenHeight - PlatformManagerConfig::SPAWN_GAP_Y;
+  float y = screenHeight - PlatformManagerConfig::START_SPAWN_HEIGHT;
+  lastPlatformMaxY = y;
+
   int x = PlatformManagerConfig::INITIAL_SPAWN_X;
   spawn(static_cast<float>(x), y, PlatformType::NORMAL);
+}
 
-  lastSpawnY = y;
+void PlatformManager::render(const Camera& camera) {
+  for (const auto& p : platforms) {
+    if (p->active) p->render(camera);
+  }
 }
 
 void PlatformManager::update(float dt, Player& player) {
   for (auto& p : platforms) {
-    if (p->active) p->update(dt, screenWidth);
+    if (p->active) p->update(dt, screenHeight);
   }
 
   float removeY = player.y + screenHeight + EnemyConfig::REMOVE_SCREEN_PADDING;
@@ -38,61 +42,35 @@ void PlatformManager::update(float dt, Player& player) {
                                  }),
                   platforms.end());
 
-  while ((int)platforms.size() < maxActive) {
-    // compute adaptive gap: fewer platforms at higher altitudes
-    float gap = computeSpawnGap(lastSpawnY);
-    // add a small random multiplier to make gaps less uniform
-    float gapRand = std::uniform_real_distribution<float>(0.75f, 1.35f)(gen);
-    gap *= gapRand;
-    float spawnY = lastSpawnY - gap;
-
-    // pick base X and add jitter so platforms don't align in neat columns
-    int baseX = xDist(gen);
-    int jitter = std::uniform_int_distribution<int>(
-        -static_cast<int>(PlatformConfig::WIDTH),
-        static_cast<int>(PlatformConfig::WIDTH))(gen);
-    int x = baseX + jitter;
-    // clamp to screen bounds
-    x = std::max(0, std::min(x, screenWidth - PlatformConfig::WIDTH));
-
-    PlatformType type = selectPlatformType(spawnY);
-    spawn(static_cast<float>(x), spawnY, type);
-    lastSpawnY = spawnY;
-
-    // Small chance to spawn nearby companion platforms (clusters)
-    float clusterP = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
-    if (clusterP < 0.25f) {
-      int offsetX = std::uniform_int_distribution<int>(-120, 120)(gen);
-      int cx = std::max(
-          0, std::min(x + offsetX, screenWidth - PlatformConfig::WIDTH));
-      float cy =
-          spawnY - std::uniform_real_distribution<float>(10.0f, 60.0f)(gen);
-      PlatformType ctype = selectPlatformType(cy);
-      spawn(static_cast<float>(cx), cy, ctype);
-    }
-  }
-
   for (const auto& p : platforms) {
     if (p->active && p->isColliding(player)) {
       p->onCollide(player);
     }
   }
+
+  spawnNextPlatform();
 }
 
-float PlatformManager::computeSpawnGap(float y) const {
-  // y decreases as player goes up. Use thresholds to interpolate gap.
-  // At low altitude: smaller gap (more platforms). At high altitude: larger
-  // gap.
-  float lowGap = PlatformManagerConfig::LOW_GAP;  // ~1.25 platforms / 100px
-  float midGap = PlatformManagerConfig::MID_GAP;
-  float highGap = PlatformManagerConfig::HIGH_GAP;  // ~2 platforms / 300px
-
-  if (y > easyThreshold) {
-    return lowGap;
-  } else if (y > mediumThreshold) {
-    return midGap;
-  } else {
-    return highGap;
+void PlatformManager::spawnNextPlatform() {
+  while (platforms.size() < PlatformManagerConfig::MAX_ACTIVE_PLATFORMS) {
+    float spawnY = computeSpawnY();
+    PlatformType type = selectPlatformType(spawnY);
+    
+    float spawnX = 0;
+    int retries = SPAWN_RETRY_COUNT;
+    do {
+      spawnX = computeSpawnX();
+    } while (platformsOverlap(spawnX, spawnY, PlatformConfig::WIDTH,
+                              PlatformConfig::HEIGHT) && --retries > 0);
+    
+    // ⚠️ CRITICAL: If retries exhausted, we're spawning on overlapping platform
+    if (retries == 0) {
+      std::cerr << "⚠️  WARNING: Platform spawned with no free space! Retries="
+                << SPAWN_RETRY_COUNT << ", platforms.size=" << platforms.size()
+                << std::endl;
+    }
+    
+    spawn(spawnX, spawnY, type);
   }
 }
 
@@ -101,79 +79,92 @@ PlatformType PlatformManager::selectPlatformType(float y) {
       PlatformManagerConfig::RAND_R_MIN,
       PlatformManagerConfig::RAND_R_MAX)(gen);
 
-  if (y > easyThreshold) {
-    return PlatformType::NORMAL;
-  } else if (y > mediumThreshold) {
-    if (r < PlatformManagerConfig::PROB_MEDIUM_NORMAL)
+  DifficultyZone zone = getDifficultyZone(y);
+
+  switch (zone) {
+    case DifficultyZone::EASY:
       return PlatformType::NORMAL;
-    return PlatformType::MOVING_HORIZONTAL;
-  } else if (y > hardThreshold) {
-    if (r < PlatformManagerConfig::PROB_VERYHIGH_NORMAL)
+
+    case DifficultyZone::MEDIUM:
+      return (r < PlatformManagerConfig::PROB_MEDIUM_NORMAL)
+                 ? PlatformType::NORMAL
+                 : PlatformType::MOVING_HORIZONTAL;
+
+    case DifficultyZone::HARD: {
+      if (r < PlatformManagerConfig::PROB_VERYHIGH_NORMAL)
+        return PlatformType::NORMAL;
+      if (r < PlatformManagerConfig::PROB_VERYHIGH_MOVINGH)
+        return PlatformType::MOVING_HORIZONTAL;
+      return PlatformType::BREAKABLE;
+    }
+
+    case DifficultyZone::EXTREME: {
+      if (r < PlatformManagerConfig::PROB_HIGHEST_NORMAL)
+        return PlatformType::NORMAL;
+      if (r < PlatformManagerConfig::PROB_HIGHEST_MOVINGH)
+        return PlatformType::MOVING_HORIZONTAL;
+      if (r < PlatformManagerConfig::PROB_HIGHEST_MOVINGV)
+        return PlatformType::MOVING_VERTICAL;
+      return PlatformType::BREAKABLE;
+    }
+
+    default:
       return PlatformType::NORMAL;
-    if (r < PlatformManagerConfig::PROB_VERYHIGH_MOVINGH)
-      return PlatformType::MOVING_HORIZONTAL;
-    return PlatformType::BREAKABLE;
-  } else {
-    if (r < PlatformManagerConfig::PROB_HIGHEST_NORMAL)
-      return PlatformType::NORMAL;
-    if (r < PlatformManagerConfig::PROB_HIGHEST_MOVINGH)
-      return PlatformType::MOVING_HORIZONTAL;
-    if (r < PlatformManagerConfig::PROB_HIGHEST_MOVINGV)
-      return PlatformType::MOVING_VERTICAL;
-    return PlatformType::BREAKABLE;
   }
 }
 
-void PlatformManager::render(const Camera& camera) {
-  for (const auto& p : platforms) {
-    if (p->active) p->render(camera);
+float PlatformManager::computeSpawnX() {
+  float maxX =
+      std::max(0.0f, static_cast<float>(screenWidth - PlatformConfig::WIDTH));
+  return std::uniform_real_distribution<float>(0.0f, maxX)(gen);
+}
+
+float PlatformManager::computeSpawnY() {
+  float easyThreshold = static_cast<float>(screenHeight) - PlatformManagerConfig::EASY_OFFSET;
+  float mediumThreshold = static_cast<float>(screenHeight) - PlatformManagerConfig::MEDIUM_OFFSET;
+  
+  float gap = (lastPlatformMaxY > easyThreshold)   ? PlatformManagerConfig::LOW_GAP
+              : (lastPlatformMaxY > mediumThreshold) ? PlatformManagerConfig::MID_GAP
+                                                       : PlatformManagerConfig::HIGH_GAP;
+  
+  gap = std::max(gap, PlayerConfig::JumpHeight + 10.0f);
+
+  float next = 0.0f;
+  while (next < PlayerConfig::JumpHeight + 50.0f) {
+    next = std::uniform_real_distribution<float>(0.0f, gap)(gen);
   }
+
+  lastPlatformMaxY -= next;
+  
+  // ⚠️ CRITICAL: Y went negative - platforms disappearing off screen
+  if (lastPlatformMaxY < 0.0f) {
+    std::cerr << "⚠️  WARNING: Negative spawn Y! lastPlatformMaxY=" << lastPlatformMaxY
+              << " (gap=" << gap << ", next=" << next << ")" << std::endl;
+  }
+  
+  return lastPlatformMaxY;
 }
 
 void PlatformManager::spawn(float x, float y, PlatformType type) {
-  // Attempt to find a non-overlapping X position for the new platform.
-  int w = PlatformConfig::WIDTH;
-  int h = PlatformConfig::HEIGHT;
-  float spawnX = x;
-  bool placed = false;
-
-  for (int attempt = 0; attempt < SPAWN_RETRY_COUNT; ++attempt) {
-    // Clamp candidate X
-    int candX =
-        std::max(0, std::min(static_cast<int>(spawnX), screenWidth - w));
-    if (!overlapsExisting(static_cast<float>(candX), y, w, h)) {
-      spawnX = static_cast<float>(candX);
-      placed = true;
-      break;
-    }
-    // jitter and try again
-    int jitter = std::uniform_int_distribution<int>(-w, w)(gen);
-    spawnX = x + jitter;
-  }
-
-  if (!placed) {
-    // As a fallback try the original X clamped; if it still overlaps, skip
-    // spawn
-    int candX = std::max(0, std::min(static_cast<int>(x), screenWidth - w));
-    if (overlapsExisting(static_cast<float>(candX), y, w, h)) {
-      return;  // give up spawning to avoid overlap
-    }
-    spawnX = static_cast<float>(candX);
-  }
-
   auto platform =
-      factory.create(static_cast<int>(spawnX), static_cast<int>(y), type);
-  if (platform) platforms.push_back(std::move(platform));
+      factory.create(static_cast<int>(x), static_cast<int>(y), type);
+  if (platform) {
+    platforms.push_back(std::move(platform));
+  } else {
+    // 🔴 CRITICAL: Factory returned nullptr - could cause infinite loop!
+    std::cerr << "❌ CRITICAL: PlatformFactory::create() returned nullptr! Type="
+              << static_cast<int>(type) << ", platforms.size=" << platforms.size()
+              << std::endl;
+  }
 }
 
-bool PlatformManager::overlapsExisting(float x, float y, int w, int h) const {
+bool PlatformManager::platformsOverlap(float x, float y, int w, int h) const {
   for (const auto& p : platforms) {
     if (!p->active) continue;
-    // rectangle overlap check
     float px = p->x;
     float py = p->y;
     int pw = p->w;
-    int ph = PlatformConfig::HEIGHT;  // use platform height
+    int ph = PlatformConfig::HEIGHT;
     bool intersect =
         !(x + w <= px || x >= px + pw || y + h <= py || y >= py + ph);
     if (intersect) return true;
@@ -182,3 +173,14 @@ bool PlatformManager::overlapsExisting(float x, float y, int w, int h) const {
 }
 
 void PlatformManager::clear() { platforms.clear(); }
+
+DifficultyZone PlatformManager::getDifficultyZone(float y) const {
+  float easyThreshold = static_cast<float>(screenHeight) - PlatformManagerConfig::EASY_OFFSET;
+  float mediumThreshold = static_cast<float>(screenHeight) - PlatformManagerConfig::MEDIUM_OFFSET;
+  float hardThreshold = static_cast<float>(screenHeight) - PlatformManagerConfig::HARD_OFFSET;
+  
+  return (y > easyThreshold)     ? DifficultyZone::EASY
+         : (y > mediumThreshold) ? DifficultyZone::MEDIUM
+         : (y > hardThreshold)   ? DifficultyZone::HARD
+                                 : DifficultyZone::EXTREME;
+}

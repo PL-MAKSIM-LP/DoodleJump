@@ -1,5 +1,9 @@
 #include "FlyingEnemy.h"
 
+#include <iostream>
+
+#include "core/Constants.h"
+
 void FlyingEnemy::update(float dt, int /*screenWidth*/) {
   if (flyFrames.empty()) return;
 
@@ -9,6 +13,12 @@ void FlyingEnemy::update(float dt, int /*screenWidth*/) {
     currentFrameIndex =
         (currentFrameIndex + 1) % static_cast<int>(flyFrames.size());
     sprite = flyFrames[currentFrameIndex];
-    if (sprite) setSpriteSize(sprite, EnemyConfig::FLY_W, EnemyConfig::FLY_H);
+    // ✅ Check for nullptr before using sprite
+    if (sprite) {
+      setSpriteSize(sprite, EnemyConfig::FLY_W, EnemyConfig::FLY_H);
+    } else {
+      std::cerr << "⚠️  FlyingEnemy: Sprite frame is nullptr at index "
+                << currentFrameIndex << std::endl;
+    }
   }
 }

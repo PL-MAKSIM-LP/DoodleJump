@@ -10,6 +10,8 @@
 #include "../Player/Player.h"
 #include "core/Constants.h"
 
+enum class DifficultyZone { EASY, MEDIUM, HARD, EXTREME };
+
 class PlatformManager {
  public:
   PlatformManager();
@@ -29,32 +31,23 @@ class PlatformManager {
   }
 
  private:
-  int screenWidth = 0;
-  int screenHeight = 0;
+  void spawnNextPlatform();
+  float computeSpawnY();
 
-  // spawn density: ~3 platforms per 100px -> gap ~33px
-  float spawnGapY = PlatformManagerConfig::SPAWN_GAP_Y;  // base gap (fallback)
-  float lastSpawnY = 0.0f;
-  // limit active platforms to a reasonable number
-  int maxActive = PlatformManagerConfig::MAX_ACTIVE;
-
-  // compute adaptive gap based on Y (higher -> larger gap)
-  float computeSpawnGap(float y) const;
-
-  std::mt19937 gen;
-  std::uniform_int_distribution<int> xDist;
-
-  PlatformFactory factory;
-
+  // Подметоды для читаемости спавна
+  float computeSpawnX();
   std::vector<std::unique_ptr<IPlatform>> platforms;
+
   // Try this many times to find a non-overlapping spawn X
   static constexpr int SPAWN_RETRY_COUNT = 8;
+  bool platformsOverlap(float x, float y, int w, int h) const;
 
-  bool overlapsExisting(float x, float y, int w, int h) const;
-  float easyThreshold =
-      static_cast<float>(screenHeight) - PlatformManagerConfig::EASY_OFFSET;
-  float mediumThreshold =
-      static_cast<float>(screenHeight) - PlatformManagerConfig::MEDIUM_OFFSET;
-  float hardThreshold =
-      static_cast<float>(screenHeight) - PlatformManagerConfig::HARD_OFFSET;
+  // Определить зону сложности по Y
+  DifficultyZone getDifficultyZone(float y) const;
+
+  std::mt19937 gen;
+  PlatformFactory factory;
+  int screenWidth = 0;
+  int screenHeight = 0;
+  float lastPlatformMaxY = 0.0f;  // Y последней спавненой платформы
 };

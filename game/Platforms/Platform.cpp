@@ -18,7 +18,6 @@ void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {
 }
 
 bool IPlatform::isColliding(const Player& player) const {
-  // Only collide when player is falling
   if (player.velY <= 0.0f) return false;
 
   float playerLeft = player.x;
