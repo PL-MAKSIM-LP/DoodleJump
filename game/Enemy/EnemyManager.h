@@ -1,6 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
+#include <random>
 #include <vector>
 
 #include "../Camera/Camera.h"
@@ -33,6 +35,12 @@ class EnemyManager {
   // allow other systems to provide PlatformManager for spawn placement
   void setPlatformManager(class PlatformManager* pm);
 
+  // Set reference to global random number generator
+  void setRandomGenerator(std::mt19937& generator) {
+    rng = &generator;
+    std::cerr << "🟢 [EnemyManager::setRandomGenerator] RNG set" << std::endl;
+  }
+
  private:
   std::vector<std::unique_ptr<IEnemy>> enemies;
 
@@ -51,5 +59,20 @@ class EnemyManager {
   class PlatformManager* platformManager = nullptr;
   EnemyFactory enemyFactory;
 
+  // pointer to global random number generator
+  std::mt19937* rng = nullptr;
+
   void spawnEnemy(float y);
+
+  // Helper methods for cleaner code
+  int countAliveEnemies() const;
+  void updateEnemiesFromCamera(float dt, int screenWidth, const Camera& camera);
+  void cleanupDeadEnemies(const Camera& camera);
+  void updateSpawnLogic(float playerY);
+  void spawnMissingEnemies(float playerY);
+  void spawnInitialBatch(float playerY);
+
+  // Helper for AABB collision detection
+  bool checkAABBCollision(float x1, float y1, float w1, float h1, float x2,
+                          float y2, float w2, float h2) const;
 };

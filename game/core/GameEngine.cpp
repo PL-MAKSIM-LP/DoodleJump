@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 
+#include <ctime>
 #include <iostream>
 
 #include "../Commands/MoveLeftCommand.h"
@@ -11,11 +12,13 @@
 #include "../Platforms/BreakablePlatform.h"
 
 GameEngine::GameEngine(int width, int height)
-    : screenWidth(width), screenHeight(height) {}
+    : screenWidth(width), screenHeight(height),
+      rng(static_cast<unsigned int>(std::time(nullptr))) {}
 
 GameEngine::~GameEngine() {}
 
 void GameEngine::init() {
+  std::cerr << "=== 🟢 GameEngine::init() ===" << std::endl;
   // Инициализируем input команды
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
@@ -31,13 +34,16 @@ void GameEngine::init() {
   platformManager.init(screenWidth, screenHeight);
   enemyManager.init(screenWidth, screenHeight);
   enemyManager.setPlatformManager(&platformManager);
+  enemyManager.setRandomGenerator(rng);
   projectileManager.init();
 
   // Начинаем с меню
   state = GameState::MENU;
+  std::cerr << "=== ✅ GameEngine initialized ===" << std::endl;
 }
 
 void GameEngine::resetGame() {
+  std::cerr << "=== 🔄 GameEngine::resetGame() ===" << std::endl;
   platformManager.clear();
   platformManager.init(screenWidth, screenHeight);
 
@@ -45,6 +51,7 @@ void GameEngine::resetGame() {
 
   enemyManager.clear();
   enemyManager.init(screenWidth, screenHeight);
+  enemyManager.setRandomGenerator(rng);
 
   projectileManager.clear();
 
@@ -69,6 +76,7 @@ void GameEngine::resetGame() {
       std::make_unique<SpawnTrampolineCommand>(&bonusManager));
 
   state = GameState::PLAYING;
+  std::cerr << "=== ✅ Game reset and started ===" << std::endl;
 }
 
 void GameEngine::update(float dt) {
@@ -103,17 +111,17 @@ void GameEngine::updatePlaying(float dt) {
   // Проверяем столкновение с врагом
   EnemyCollision collisionResult = enemyManager.checkPlayerCollision(player);
   if (collisionResult == EnemyCollision::HIT) {
-    std::cout << "Player collided with enemy - GAME OVER" << std::endl;
+    std::cerr << "❌ GAME OVER: Player collided with enemy" << std::endl;
     // state = GameState::GAME_OVER;
     return;
   } else if (collisionResult == EnemyCollision::STOMP) {
-    std::cout << "Player stomped on enemy" << std::endl;
+    std::cerr << "✓ Player stomped on enemy" << std::endl;
     player.jump();
   }
 
   // Проверяем падение игрока
   if (!player.alive) {
-    std::cout << "Player died - GAME OVER" << std::endl;
+    std::cerr << "❌ GAME OVER: Player died (fell off screen)" << std::endl;
     state = GameState::GAME_OVER;
     return;
   }

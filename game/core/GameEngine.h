@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 #include "../Bonuses/BonusManager.h"
 #include "../Camera/Camera.h"
 #include "../Commands/InputHandler.h"
@@ -44,6 +46,9 @@ class GameEngine {
   int screenHeight;
 
   GameState state = GameState::MENU;
+
+  // Random number generator (used by all game systems)
+  std::mt19937 rng;
 
   // Менеджеры всех систем
   PlatformManager platformManager;

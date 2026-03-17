@@ -37,9 +37,14 @@ void BreakablePlatform::update(float dt, int screenHeight) {
 
 void BreakablePlatform::onCollide(Player& player) {
   if (!broken) {
+    std::cerr << "🔴 [BreakablePlatform::onCollide] Breaking platform at x="
+              << x << " y=" << y << std::endl;
     broken = true;
-    breakStage = 0;
-    breakTimer = 0.0f;
+    player.jump();
   }
+
+  breakStage = 0;
+  breakTimer = 0.0f;
+
   player.jump();
 }

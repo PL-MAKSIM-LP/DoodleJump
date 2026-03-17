@@ -1,5 +1,7 @@
 #include "Trampoline.h"
 
+#include <iostream>
+
 #include "core/Constants.h"
 
 Trampoline::Trampoline() {
@@ -9,4 +11,7 @@ Trampoline::Trampoline() {
 
 void Trampoline::update(float, int) {}
 
-void Trampoline::applyEffect(Player& player) { player.jump(1.0f); }
+void Trampoline::applyEffect(Player& player) {
+  std::cerr << "🪂 [Trampoline::applyEffect] Boost jump" << std::endl;
+  player.jump(BonusConfig::TRAMPOLINE_BOOST_MULT);
+}

@@ -1,6 +1,7 @@
 #include "MovingPlatformVertical.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "core/Constants.h"
 
@@ -18,4 +19,6 @@ void MovingPlatformVertical::update(float dt, int screenHeight) {
 void MovingPlatformVertical::setMovement() {
   minY = y - MovingPlatformConfig::SWING;
   maxY = y + MovingPlatformConfig::SWING;
+  std::cerr << "🔀 [MovingPlatformVertical::setMovement] minY=" << minY
+            << " maxY=" << maxY << std::endl;
 }

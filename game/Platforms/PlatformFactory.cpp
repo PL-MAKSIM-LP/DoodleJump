@@ -25,6 +25,8 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
 
   switch (type) {
     case PlatformType::MOVING_VERTICAL: {
+      std::cerr << "🟢 [PlatformFactory] Creating MOVING_VERTICAL at x=" << x
+                << " y=" << y << std::endl;
       auto p = std::make_unique<MovingPlatformVertical>();
       p->init(x, y, spr, type);
       p->setMovement();
@@ -32,6 +34,8 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
     }
 
     case PlatformType::MOVING_HORIZONTAL: {
+      std::cerr << "🟢 [PlatformFactory] Creating MOVING_HORIZONTAL at x=" << x
+                << " y=" << y << std::endl;
       auto p = std::make_unique<MovingPlatformHorizontal>();
       p->init(x, y, spr, type);
       p->setMovement();
@@ -39,6 +43,8 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
     }
 
     case PlatformType::BREAKABLE: {
+      std::cerr << "🟢 [PlatformFactory] Creating BREAKABLE at x=" << x
+                << " y=" << y << std::endl;
       auto p = std::make_unique<BreakablePlatform>();
       p->setFactory(const_cast<PlatformFactory*>(this));  // Pass factory reference
       p->init(x, y, spr, type);
@@ -47,6 +53,8 @@ std::unique_ptr<IPlatform> PlatformFactory::createPlatform(
 
     case PlatformType::NORMAL:
     default: {
+      std::cerr << "🟢 [PlatformFactory] Creating NORMAL at x=" << x << " y="
+                << y << std::endl;
       auto p = std::make_unique<NormalPlatform>();
       p->init(x, y, spr, PlatformType::NORMAL);
       return p;

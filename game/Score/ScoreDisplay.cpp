@@ -14,6 +14,7 @@ ScoreDisplay::~ScoreDisplay() {
 }
 
 void ScoreDisplay::init() {
+  std::cerr << "🟢 [ScoreDisplay::init]" << std::endl;
   // Загружаем спрайты для цифр (0-9)
   // Используем один файл спрайта где все цифры рядом
   const char* digitFile = "../data/digits.png";
@@ -28,8 +29,9 @@ void ScoreDisplay::init() {
     for (int i = 0; i < 10; i++) {
       digitSprites[i] = allDigits;
     }
+    std::cerr << "✅ [ScoreDisplay] Digits loaded" << std::endl;
   } else {
-    std::cout << "Failed to load digits sprite" << std::endl;
+    std::cerr << "❌ [ScoreDisplay] Failed to load digits sprite" << std::endl;
   }
 }
 

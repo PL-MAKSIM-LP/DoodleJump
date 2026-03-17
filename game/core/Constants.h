@@ -93,6 +93,9 @@ constexpr float SPAWN_AHEAD_EXTRA =
     200.0f;  // place spawned enemies this far above player
 constexpr int INITIAL_BATCH =
     5;  // initial number of enemies to spawn when enabling
+constexpr int DESIRED_ENEMIES = 5;        // target number of active enemies
+constexpr int SPAWN_X_ATTEMPTS = 8;       // attempts to find valid X position
+constexpr float MIN_HORIZONTAL_SPACING = 500.0f;  // minimum distance between spawned enemies
 
 // Placement and removal
 constexpr float REMOVE_SCREEN_PADDING =

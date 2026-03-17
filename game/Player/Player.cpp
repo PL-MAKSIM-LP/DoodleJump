@@ -17,6 +17,8 @@ Player::~Player() {
 }
 
 void Player::init(int screenWidth, int screenHeight) {
+  std::cerr << "🟢 [Player::init] screenSize=" << screenWidth << "x"
+            << screenHeight << std::endl;
   spriteLeft = createSprite("../sprites/lik-left.png");
   spriteRight = createSprite("../sprites/lik-right.png");
   lastSprite = spriteLeft;
@@ -27,6 +29,7 @@ void Player::init(int screenWidth, int screenHeight) {
   x = (screenWidth / 2) - (width / 2);
   y = screenHeight - height;
   this->screenHeight = screenHeight;
+  std::cerr << "✅ [Player] Initialized at x=" << x << " y=" << y << std::endl;
 }
 
 void Player::update(float dt, int screenWidth) {
@@ -35,6 +38,8 @@ void Player::update(float dt, int screenWidth) {
 
   if (y > screenHeight - height + 5) {
     alive = false;
+    std::cerr << "⚠️  [Player::update] DIED: fell off screen at y=" << y
+              << std::endl;
     // jump();
   }
   velX = 0;
@@ -70,7 +75,11 @@ void Player::render(const Camera& camera) {
   }
 }
 
-void Player::jump(float scale) { velY = -JUMP_FORCE * scale; }
+void Player::jump(float scale) {
+  velY = -JUMP_FORCE * scale;
+  std::cerr << "⬆️  [Player::jump] scale=" << scale << " velY=" << velY
+            << std::endl;
+}
 
 void Player::startMoveLeft() { movingLeft = true; };
 void Player::stopMoveLeft() { movingLeft = false; };

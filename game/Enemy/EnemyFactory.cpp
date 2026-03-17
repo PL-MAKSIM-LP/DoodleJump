@@ -27,15 +27,17 @@ std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {
   // initialized before this is called)
   if (type == EnemyType::FLYING) {
     if (!flyingFramesInitialized) {
+      std::cerr << "🟡 [EnemyFactory::create] Initializing flying enemy frames"
+                << std::endl;
       for (int i = 1; i <= EnemyConfig::FLY_FRAMES_COUNT; ++i) {
         std::string path = std::string(EnemyConfig::SPRITE_FLYING_BASE_PATH) +
-                          std::to_string(i) + ".png";
+                           std::to_string(i) + ".png";
         Sprite* s = createSprite(path.c_str());
         if (s) {
           setSpriteSize(s, EnemyConfig::FLY_W, EnemyConfig::FLY_H);
+          std::cerr << "  ✓ Loaded frame " << i << std::endl;
         } else {
-          std::cerr << "⚠️  EnemyFactory: Failed to load " << path
-                    << std::endl;
+          std::cerr << "  ⚠️  Failed to load " << path << std::endl;
         }
         flyingFrames.push_back(s);
       }
@@ -44,6 +46,7 @@ std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {
       for (auto f : flyingFrames)
         if (f) hasAny = true;
       if (!hasAny) {
+        std::cerr << "  ⚠️  Using fallback flying sprite" << std::endl;
         Sprite* s = createSprite(EnemyConfig::SPRITE_FLYING_FALLBACK);
         if (s) {
           setSpriteSize(s, EnemyConfig::FLY_W, EnemyConfig::FLY_H);
@@ -55,6 +58,8 @@ std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {
       }
 
       flyingFramesInitialized = true;
+      std::cerr << "🟢 [EnemyFactory] Flying enemy sprites initialized"
+                << std::endl;
     }
 
     auto enemy = std::make_unique<FlyingEnemy>();
@@ -66,10 +71,14 @@ std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {
     return enemy;
   } else {
     if (!groundSprite) {
+      std::cerr << "🟡 [EnemyFactory::create] Loading grounded enemy sprite"
+                << std::endl;
       groundSprite = createSprite(EnemyConfig::SPRITE_GROUNDED_PATH);
       if (groundSprite) {
         setSpriteSize(groundSprite, EnemyConfig::GROUND_W,
                       EnemyConfig::GROUND_H);
+        std::cerr << "🟢 [EnemyFactory] Grounded enemy sprite loaded"
+                  << std::endl;
       } else {
         std::cerr << "❌ EnemyFactory: Failed to load grounded sprite"
                   << std::endl;
@@ -95,9 +104,18 @@ void EnemyFactory::initializeGroundedWalkFrames() {
   // For now, use the same sprite 3 times
   // TODO: In the future, load separate walk animation frames
   // groundedWalkFrames = {walking_frame_1, walking_frame_2, walking_frame_3}
+  std::cerr << "🟡 [EnemyFactory::initializeGroundedWalkFrames] Initializing"
+            << std::endl;
   if (groundSprite) {
     groundedWalkFrames.assign(EnemyConfig::GROUNDED_WALK_FRAMES_COUNT,
                               groundSprite);
+    std::cerr << "🟢 [EnemyFactory] Grounded walk frames initialized ("
+              << EnemyConfig::GROUNDED_WALK_FRAMES_COUNT << " frames)"
+              << std::endl;
+  } else {
+    std::cerr << "⚠️  [EnemyFactory::initializeGroundedWalkFrames] groundSprite "
+                 "is null"
+              << std::endl;
   }
   groundedWalkFramesInitialized = true;
 }

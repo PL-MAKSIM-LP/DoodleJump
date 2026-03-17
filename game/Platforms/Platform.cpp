@@ -1,6 +1,7 @@
 #include "Platform.h"
 
 #include <cstdlib>
+#include <iostream>
 
 void IPlatform::render(const Camera& camera) {
   if (active && this->sprite) {
@@ -15,6 +16,8 @@ void IPlatform::init(int x, int y, Sprite* spr, PlatformType t) {
   sprite = spr;
   type = t;
   if (sprite) setSpriteSize(sprite, this->w, this->h);
+  std::cerr << "🟢 [Platform::init] type=" << static_cast<int>(t) << " x=" << x
+            << " y=" << y << std::endl;
 }
 
 bool IPlatform::isColliding(const Player& player) const {

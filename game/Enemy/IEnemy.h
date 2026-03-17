@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "../../framework/Framework.h"
 #include "../Camera/Camera.h"
 #include "core/Constants.h"
@@ -33,7 +35,13 @@ class IEnemy {
   }
 
   virtual bool isAlive() const { return alive; }
-  virtual void setAlive(bool a) { alive = a; }
+  virtual void setAlive(bool a) {
+    if (alive && !a) {  // Transitioning from alive to dead
+      std::cerr << "🟡 [IEnemy] Enemy died at x=" << x << " y=" << y
+                << std::endl;
+    }
+    alive = a;
+  }
 
   virtual float getX() const { return x; }
   virtual float getY() const { return y; }

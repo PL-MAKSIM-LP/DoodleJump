@@ -23,4 +23,6 @@ void MovingPlatformHorizontal::setMovement() {
   static std::mt19937 gen(std::random_device{}());
   std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
   moveDir = dist(gen);
+  std::cerr << "🔀 [MovingPlatformHorizontal::setMovement] minX=" << minX
+            << " maxX=" << maxX << " moveDir=" << moveDir << std::endl;
 }

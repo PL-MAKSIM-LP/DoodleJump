@@ -11,11 +11,18 @@ ProjectileManager::ProjectileManager() {}
 ProjectileManager::~ProjectileManager() {}
 
 void ProjectileManager::init() {
+  std::cerr << "🟢 [ProjectileManager::init]" << std::endl;
   sprite = createSprite("../data/projectile.png");
   if (!sprite) {
+    std::cerr << "⚠️  Fallback to Breakout sprite" << std::endl;
     sprite = createSprite("../data/01-Breakout-Tiles.png");
   }
-  if (sprite) setSpriteSize(sprite, ProjectileConfig::W, ProjectileConfig::H);
+  if (sprite) {
+    setSpriteSize(sprite, ProjectileConfig::W, ProjectileConfig::H);
+    std::cerr << "✅ [ProjectileManager] Sprite loaded" << std::endl;
+  } else {
+    std::cerr << "❌ [ProjectileManager] Failed to load sprite" << std::endl;
+  }
 }
 
 void ProjectileManager::update(float dt, const Camera &camera) {
@@ -54,8 +61,13 @@ void ProjectileManager::shoot(float x, float y, float velX, float velY) {
   p.velY = velY;
   p.active = true;
   projectiles.push_back(p);
-  std::cout << "shoot: " << x << "," << y << " vel=" << velX << "," << velY
-            << std::endl;
+  std::cerr << "🔫 [ProjectileManager::shoot] x=" << x << " y=" << y
+            << " velX=" << velX << " velY=" << velY
+            << " total=" << projectiles.size() << std::endl;
 }
 
-void ProjectileManager::clear() { projectiles.clear(); }
+void ProjectileManager::clear() {
+  std::cerr << "🗑️  [ProjectileManager::clear] Cleared " << projectiles.size()
+            << " projectiles" << std::endl;
+  projectiles.clear();
+}

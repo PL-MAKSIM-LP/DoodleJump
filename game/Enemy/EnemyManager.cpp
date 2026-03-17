@@ -2,9 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <random>
+#include <iostream>
 
 #include "../Platforms/Platform.h"
 #include "../Platforms/PlatformManager.h"
@@ -14,6 +12,14 @@
 
 void EnemyManager::setPlatformManager(class PlatformManager *pm) {
   platformManager = pm;
+  if (pm) {
+    std::cerr << "🟢 [EnemyManager::setPlatformManager] Platform manager set"
+              << std::endl;
+  } else {
+    std::cerr
+        << "⚠️  [EnemyManager::setPlatformManager] Platform manager set to null"
+        << std::endl;
+  }
 }
 
 void EnemyManager::init(int w, int h) {
@@ -27,50 +33,47 @@ void EnemyManager::init(int w, int h) {
   spawnAhead =
       static_cast<float>(screenHeight) + EnemyConfig::SPAWN_AHEAD_EXTRA;
   lastSpawnY = static_cast<float>(screenHeight);
+
+  std::cerr << "🟢 [EnemyManager::init] screenSize=" << w << "x" << h
+            << " spawnStartY=" << spawnStartY << std::endl;
 }
 
 void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
                           float playerY) {
+  updateEnemiesFromCamera(dt, screenWidth_, camera);
+  spawnMissingEnemies(playerY);
+  updateSpawnLogic(playerY);
+  cleanupDeadEnemies(camera);
+}
+
+void EnemyManager::render(const Camera &camera) {
   for (auto &e : enemies) {
-    if (e->isAlive()) e->update(dt, screenWidth_);
+    if (!e->isAlive()) continue;
+    e->render(camera);
   }
+}
 
-  // Ensure there's a minimum number of active enemies by spawning off-screen
-  const int desiredEnemies = 5;
-  int aliveCount = 0;
+int EnemyManager::countAliveEnemies() const {
+  int count = 0;
   for (const auto &e : enemies) {
-    if (e->isAlive()) ++aliveCount;
+    if (e->isAlive()) ++count;
   }
-  if (aliveCount < desiredEnemies) {
-    int toSpawn = desiredEnemies - aliveCount;
-    for (int i = 0; i < toSpawn; ++i) {
-      // place spawned enemies above the player's view (off-screen)
-      float spawnY =
-          playerY - spawnAhead - (i + 1) * EnemyConfig::SPAWN_INTERVAL;
-      spawnEnemy(spawnY);
-    }
+  if (count != static_cast<int>(enemies.size())) {
+    std::cerr << "🟡 [EnemyManager] Alive=" << count
+              << " Total=" << enemies.size() << std::endl;
   }
+  return count;
+}
 
-  if (!spawnEnabled && playerY <= spawnStartY) {
-    spawnEnabled = true;
-    float firstY = playerY - spawnAhead;
-    const int initialBatch = EnemyConfig::INITIAL_BATCH;
-    float y = firstY;
-    for (int i = 0; i < initialBatch; ++i) {
-      spawnEnemy(y);
-      y -= spawnInterval;
-    }
-    lastSpawnY = y + spawnInterval;
+void EnemyManager::updateEnemiesFromCamera(float dt, int screenWidth,
+                                           const Camera &camera) {
+  for (auto &e : enemies) {
+    if (e->isAlive()) e->update(dt, screenWidth);
   }
+}
 
-  if (spawnEnabled) {
-    while (playerY <= lastSpawnY + spawnInterval) {
-      float nextY = lastSpawnY - spawnInterval;
-      spawnEnemy(nextY);
-      lastSpawnY = nextY;
-    }
-  }
-
+void EnemyManager::cleanupDeadEnemies(const Camera &camera) {
+  int beforeSize = enemies.size();
   enemies.erase(
       std::remove_if(enemies.begin(), enemies.end(),
                      [&](const std::unique_ptr<IEnemy> &e) {
@@ -81,39 +84,91 @@ void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
                        return !e->isAlive();
                      }),
       enemies.end());
+  int afterSize = enemies.size();
+  if (beforeSize != afterSize) {
+    std::cerr << "🟡 [EnemyManager::cleanupDeadEnemies] Removed "
+              << (beforeSize - afterSize) << " enemies (" << beforeSize << "->"
+              << afterSize << ")" << std::endl;
+  }
 }
 
-void EnemyManager::render(const Camera &camera) {
-  for (auto &e : enemies) {
-    if (!e->isAlive()) continue;
-    e->render(camera);
+void EnemyManager::updateSpawnLogic(float playerY) {
+  // Enable spawning when player reaches spawn threshold
+  if (!spawnEnabled && playerY <= spawnStartY) {
+    std::cerr << "🟢 [EnemyManager] Spawn ENABLED at playerY=" << playerY
+              << " (threshold=" << spawnStartY << ")" << std::endl;
+    spawnEnabled = true;
+    spawnInitialBatch(playerY);
+  }
+
+  // Continue spawning new enemies as player moves up
+  if (spawnEnabled) {
+    // Safety limit to prevent infinite loops
+    const int maxIterations = 100;
+    int iterations = 0;
+    while (playerY <= lastSpawnY + spawnInterval &&
+           iterations < maxIterations) {
+      float nextY = lastSpawnY - spawnInterval;
+      spawnEnemy(nextY);
+      lastSpawnY = nextY;
+      iterations++;
+    }
+    if (iterations >= maxIterations) {
+      std::cerr << "⚠️  EnemyManager: Spawn loop hit iteration limit"
+                << std::endl;
+    }
+  }
+}
+
+void EnemyManager::spawnInitialBatch(float playerY) {
+  float firstY = playerY - spawnAhead;
+  float y = firstY;
+  std::cerr << "🟢 [EnemyManager::spawnInitialBatch] Spawning "
+            << EnemyConfig::INITIAL_BATCH << " enemies starting at y=" << firstY
+            << std::endl;
+  for (int i = 0; i < EnemyConfig::INITIAL_BATCH; ++i) {
+    spawnEnemy(y);
+    y -= spawnInterval;
+  }
+  lastSpawnY = y + spawnInterval;
+}
+
+void EnemyManager::spawnMissingEnemies(float playerY) {
+  // Maintain minimum number of enemies
+  int aliveCount = countAliveEnemies();
+  if (aliveCount < EnemyConfig::DESIRED_ENEMIES) {
+    int toSpawn = EnemyConfig::DESIRED_ENEMIES - aliveCount;
+    std::cerr << "🟡 [EnemyManager::spawnMissingEnemies] alive=" << aliveCount
+              << " desired=" << EnemyConfig::DESIRED_ENEMIES
+              << " spawning=" << toSpawn << std::endl;
+    for (int i = 0; i < toSpawn; ++i) {
+      float spawnY =
+          playerY - spawnAhead - (i + 1) * EnemyConfig::SPAWN_INTERVAL;
+      spawnEnemy(spawnY);
+    }
   }
 }
 
 EnemyCollision EnemyManager::checkPlayerCollision(const Player &player) {
   for (auto &e : enemies) {
     if (!e->isAlive()) continue;
-    auto collisionResult = EnemyCollision::NOTHING;
-    // Enemy bounding box: top = e->getY(), bottom = e->getY() + e->getH()
-    bool coll = !(player.x + player.width <= e->getX() ||
-                  player.x >= e->getX() + e->getW() ||
-                  player.y + player.height <= e->getY() ||
-                  player.y >= e->getY() + e->getH());
-    if (coll) {
-      // Prioritize stomp detection: player must be falling and primarily above
-      // the enemy. Use vertical centers to decide if player approaches from
-      // above.
+
+    if (checkAABBCollision(player.x, player.y, player.width, player.height,
+                           e->getX(), e->getY(), e->getW(), e->getH())) {
+      // Check if player stomped (falling from above)
       float playerCenterY = player.y + static_cast<float>(player.height) / 2.0f;
       float enemyCenterY = e->getY() + static_cast<float>(e->getH()) / 2.0f;
       if (player.velY > 0 && playerCenterY < enemyCenterY) {
         e->setAlive(false);
+        std::cerr << "🟢 [EnemyManager] Player STOMPED enemy at x=" << e->getX()
+                  << std::endl;
         return EnemyCollision::STOMP;
       }
-
+      std::cerr << "❌ [EnemyManager] Player HIT by enemy at x=" << e->getX()
+                << std::endl;
       return EnemyCollision::HIT;
     }
   }
-
   return EnemyCollision::NOTHING;
 }
 
@@ -121,68 +176,88 @@ bool EnemyManager::checkProjectileCollision(float px, float py, float pw,
                                             float ph) {
   for (auto &e : enemies) {
     if (!e->isAlive()) continue;
-    bool coll = !(px + pw <= e->getX() || px >= e->getX() + e->getW() ||
-                  py + ph <= e->getY() || py >= e->getY() + e->getH());
-    if (coll) {
+
+    if (checkAABBCollision(px, py, pw, ph, e->getX(), e->getY(), e->getW(),
+                           e->getH())) {
       e->setAlive(false);
+      std::cerr << "🟢 [EnemyManager] Enemy KILLED by projectile at x="
+                << e->getX() << std::endl;
       return true;
     }
   }
   return false;
 }
 
+bool EnemyManager::checkAABBCollision(float x1, float y1, float w1, float h1,
+                                      float x2, float y2, float w2,
+                                      float h2) const {
+  return !(x1 + w1 <= x2 || x1 >= x2 + w2 || y1 + h1 <= y2 || y1 >= y2 + h2);
+}
+
 void EnemyManager::spawnEnemy(float y) {
-  static std::mt19937 gen(static_cast<unsigned int>(std::time(nullptr)));
+  if (!rng) {
+    std::cerr << "❌ EnemyManager: Random generator not set!" << std::endl;
+    return;
+  }
+
   std::uniform_int_distribution<int> xDist(
       0, std::max(0, screenWidth - EnemyConfig::X_MARGIN));
 
   auto tooCloseX = [&](int candidateX) {
-    const int minSpacing = 500;  // pixels
-    for (const auto &exst : enemies) {
-      if (!exst->isAlive()) continue;
-      if (std::abs(static_cast<int>(exst->getX()) - candidateX) < minSpacing)
+    for (const auto &enemy : enemies) {
+      if (!enemy->isAlive()) continue;
+      if (std::abs(static_cast<int>(enemy->getX()) - candidateX) <
+          EnemyConfig::MIN_HORIZONTAL_SPACING)
         return true;
     }
     return false;
   };
 
+  // Try to spawn on normal platform
   if (platformManager) {
     const auto &plats = platformManager->getPlatforms();
-    const float tolerance = EnemyConfig::PLATFORM_TOLERANCE;
-    for (const auto &up : plats) {
-      if (!up->active) continue;
-      if (up->type != PlatformType::NORMAL) continue;
-      float py = up->y;
-      if (std::fabs(py - y) <= tolerance) {
-        int ex =
-            static_cast<int>(up->x + (up->w - EnemyConfig::GROUND_W) / 2.0f);
-        // enforce horizontal spacing: skip this platform if too close
+    for (const auto &plat : plats) {
+      if (!plat->active || plat->type != PlatformType::NORMAL) continue;
+
+      if (std::fabs(plat->y - y) <= EnemyConfig::PLATFORM_TOLERANCE) {
+        int ex = static_cast<int>(plat->x +
+                                  (plat->w - EnemyConfig::GROUND_W) / 2.0f);
         if (tooCloseX(ex)) continue;
-        int ey = static_cast<int>(up->y - EnemyConfig::GROUND_H);
-        auto e = enemyFactory.create(ex, ey, EnemyType::GROUND);
-        enemies.push_back(std::move(e));
+
+        int ey = static_cast<int>(plat->y - EnemyConfig::GROUND_H);
+        auto enemy = enemyFactory.create(ex, ey, EnemyType::GROUND);
+        if (enemy) {
+          enemies.push_back(std::move(enemy));
+          std::cerr << "🟢 [EnemyManager::spawnEnemy] GROUNDED at x=" << ex
+                    << " y=" << ey << " total=" << enemies.size() << std::endl;
+        }
         return;
       }
     }
   }
 
-  // Flying enemy spawn: try several attempts to find X with required spacing
-  const int maxAttempts = 8;
-  int chosenX = -1;
-  for (int attempt = 0; attempt < maxAttempts; ++attempt) {
-    int x = xDist(gen);
+  // Spawn as flying enemy with spacing constraints
+  for (int attempt = 0; attempt < EnemyConfig::SPAWN_X_ATTEMPTS; ++attempt) {
+    int x = xDist(*rng);
     if (!tooCloseX(x)) {
-      chosenX = x;
-      break;
+      auto enemy =
+          enemyFactory.create(x, static_cast<int>(y), EnemyType::FLYING);
+      if (enemy) {
+        enemies.push_back(std::move(enemy));
+        std::cerr << "🟢 [EnemyManager::spawnEnemy] FLYING at x=" << x
+                  << " y=" << y << " total=" << enemies.size() << std::endl;
+      }
+      return;
     }
   }
-  if (chosenX == -1) return;  // give up spawning to maintain spacing
 
-  auto e = enemyFactory.create(chosenX, static_cast<int>(y), EnemyType::FLYING);
-  if (e) enemies.push_back(std::move(e));
+  std::cerr << "🟡 [EnemyManager::spawnEnemy] Failed to spawn at y=" << y
+            << " (spacing constraints)" << std::endl;
 }
 
 void EnemyManager::clear() {
+  std::cerr << "🟡 [EnemyManager::clear] Clearing " << enemies.size()
+            << " enemies" << std::endl;
   enemies.clear();
   spawnEnabled = false;
   lastSpawnY = static_cast<float>(screenHeight);

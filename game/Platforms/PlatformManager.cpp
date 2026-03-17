@@ -10,6 +10,8 @@ PlatformManager::PlatformManager()
 PlatformManager::~PlatformManager() { clear(); }
 
 void PlatformManager::init(int screenWidth_, int screenHeight_) {
+  std::cerr << "🟢 [PlatformManager::init] screen=" << screenWidth_ << "x"
+            << screenHeight_ << std::endl;
   screenWidth = screenWidth_;
   screenHeight = screenHeight_;
 
@@ -18,6 +20,8 @@ void PlatformManager::init(int screenWidth_, int screenHeight_) {
 
   int x = PlatformManagerConfig::INITIAL_SPAWN_X;
   spawn(static_cast<float>(x), y, PlatformType::NORMAL);
+  std::cerr << "✅ [PlatformManager] Initialized with first platform at ("
+            << x << ", " << y << ")" << std::endl;
 }
 
 void PlatformManager::render(const Camera& camera) {
@@ -32,6 +36,7 @@ void PlatformManager::update(float dt, Player& player) {
   }
 
   float removeY = player.y + screenHeight + EnemyConfig::REMOVE_SCREEN_PADDING;
+  int beforeSize = platforms.size();
   platforms.erase(std::remove_if(platforms.begin(), platforms.end(),
                                  [&](const std::unique_ptr<IPlatform>& p) {
                                    if (!p->active) return true;
@@ -41,6 +46,12 @@ void PlatformManager::update(float dt, Player& player) {
                                    return false;
                                  }),
                   platforms.end());
+  int afterSize = platforms.size();
+  if (beforeSize != afterSize) {
+    std::cerr << "🟡 [PlatformManager] Removed " << (beforeSize - afterSize)
+              << " platforms (" << beforeSize << " -> " << afterSize << ")"
+              << std::endl;
+  }
 
   for (const auto& p : platforms) {
     if (p->active && p->isColliding(player)) {

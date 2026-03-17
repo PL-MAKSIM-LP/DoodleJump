@@ -29,10 +29,17 @@ class MyFramework : public Framework {
   }
 
   virtual bool Init() {
+    std::cerr << "=== 🎮 MyFramework::Init() ===" << std::endl;
     background = createSprite("../sprites/jungle-bck@2x.png");
-    if (background) setSpriteSize(background, screenWidth, screenHeight);
+    if (background) {
+      setSpriteSize(background, screenWidth, screenHeight);
+      std::cerr << "✅ Background loaded" << std::endl;
+    } else {
+      std::cerr << "⚠️  Background not found" << std::endl;
+    }
 
     gameEngine.init();
+    std::cerr << "=== ✅ Framework initialized ===" << std::endl;
 
     return true;
   }
