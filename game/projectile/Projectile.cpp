@@ -8,11 +8,11 @@ void Projectile::update(float dt) {
   x += velX * dt;
   y += velY * dt;
 
-  int widht, height;
-  getScreenSize(widht, height);
+  int width = 0, height = 0;
+  getScreenSize(width, height);
   if (x < 0) {
-    x = widht;
-  } else if (x > widht) {
+    x = width;
+  } else if (x > width) {
     x = 0;
   }
 

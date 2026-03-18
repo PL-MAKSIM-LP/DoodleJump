@@ -41,7 +41,6 @@ void GameEngine::init() {
   enemyManager.init(screenWidth, screenHeight);
   enemyManager.setPlatformManager(&platformManager);
   enemyManager.setRandomGenerator(rng);
-  bonusManager.setPlatformManager(&platformManager);
   bonusManager.setRandomGenerator(rng);
   projectileManager.init();
 
@@ -102,7 +101,7 @@ void GameEngine::updateMenu() {
 
 void GameEngine::updatePlaying(float dt) {
   player.update(dt, screenWidth);
-  platformManager.update(dt, player);
+  platformManager.update(dt, player, scoreDisplay);
   enemyManager.update(dt, screenWidth, camera, player.y);
   projectileManager.update(dt, camera);
   bonusManager.update(screenWidth, screenHeight, camera, player);
@@ -139,9 +138,14 @@ void GameEngine::updatePlaying(float dt) {
 }
 
 void GameEngine::updateGameOver() {
-  // TODO: Добавить логику для экрана Game Over (например, ждать нажатия кнопки
-  // для перезапуска)
+  // Ждём нажатия кнопки для рестарта
+  // Клавиши обрабатываются в game.cpp
   camera.update(player.y, screenHeight);
+}
+
+void GameEngine::restartGame() {
+  std::cerr << "[GameEngine::restartGame()] restarting game" << std::endl;
+  resetGame();
 }
 
 void GameEngine::render() {
@@ -153,7 +157,11 @@ void GameEngine::render() {
       renderGame();
       break;
     case GameState::GAME_OVER:
-      // renderGameOver();
+      renderGame();  // Продолжаем показывать игру
+      std::cerr << "\n========== GAME OVER ==========" << std::endl;
+      std::cerr << "Your score: " << scoreDisplay.getScore() << std::endl;
+      std::cerr << "Press SPACE or ENTER to restart" << std::endl;
+      std::cerr << "==============================\n" << std::endl;
       break;
   }
 }

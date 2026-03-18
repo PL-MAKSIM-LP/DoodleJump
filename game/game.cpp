@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../framework/Framework.h"
+#include "Helpers/SpriteHelper.h"
 #include "core/Constants.h"
 #include "core/GameEngine.h"
 
@@ -36,12 +37,17 @@ class MyFramework : public Framework {
 
   virtual bool Init() {
     std::cerr << "MyFramework::Init()" << std::endl;
-    background = createSprite("../sprites/jungle-bck@2x.png");
-    if (background) {
-      setSpriteSize(background, screenWidth, screenHeight);
-    } else {
+
+    // Create fallback PNG sprite from embedded bytes
+    // TODO: Fix PNG data - currently invalid format
+    // SpriteHelper::BytesArrayToPNG();
+
+    background = createSprite(BGConfig::BG_SPRITE_PATH);
+    if (!background) {
+      background = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
       std::cerr << "[MyFramework::Init()] fail to load background" << std::endl;
     }
+    setSpriteSize(background, screenWidth, screenHeight);
 
     gameEngine.init();
 
@@ -57,8 +63,10 @@ class MyFramework : public Framework {
     float dt = (now - lastTick) / 1000.0f;
     lastTick = now;
 
-    // Всегда рисуем фон
-    drawSprite(background, 0, 0);
+    // Всегда рисуем фон (если загружен)
+    if (background) {
+      drawSprite(background, 0, 0);
+    }
 
     // Обновляем и рендерим игру через GameEngine
     gameEngine.update(dt);
@@ -89,6 +97,8 @@ class MyFramework : public Framework {
   virtual void onKeyPressed(FRKey k) {
     if (gameEngine.getState() == GameState::PLAYING) {
       gameEngine.getInputHandler().handleKeyPressed(k, gameEngine.getPlayer());
+    } else if (gameEngine.getState() == GameState::GAME_OVER) {
+      gameEngine.restartGame();
     }
   }
 

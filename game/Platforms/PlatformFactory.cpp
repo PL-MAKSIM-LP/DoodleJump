@@ -73,11 +73,40 @@ void PlatformFactory::initialize() {
   }
   std::cerr << "[PlatformFactory::initialize] loading sprites" << std::endl;
   normalSprite = loadAndSetupSprite(PlatformConfig::SPRITE_NORMAL_PATH);
+
+  if (!normalSprite) {
+    std::cerr << "[PlatformFactory::initialize] failed to load normal sprite, "
+                 "using fallback"
+              << std::endl;
+    normalSprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
   movingHorizontalSprite =
       loadAndSetupSprite(PlatformConfig::SPRITE_MOVING_H_PATH);
+  if (!movingHorizontalSprite) {
+    std::cerr << "[PlatformFactory::initialize] failed to load moving "
+                 "horizontal sprite, using fallback"
+              << std::endl;
+    movingHorizontalSprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
   movingVerticalSprite =
       loadAndSetupSprite(PlatformConfig::SPRITE_MOVING_V_PATH);
+  if (!movingVerticalSprite) {
+    std::cerr << "[PlatformFactory::initialize] failed to load moving vertical "
+                 "sprite, using fallback"
+              << std::endl;
+    movingVerticalSprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
   breakableSprite = loadAndSetupSprite(PlatformConfig::SPRITE_BREAKABLE_PATH);
+  if (!breakableSprite) {
+    std::cerr
+        << "[PlatformFactory::initialize] failed to load breakable sprite, "
+           "using fallback"
+        << std::endl;
+    breakableSprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
 
   initializeBreakAnimationSprites();
   initialized = true;
@@ -115,10 +144,15 @@ void PlatformFactory::initializeBreakAnimationSprites() {
   for (int i = 0; i < BreakablePlatformConfig::MAX_BREAK_SPRITES; ++i) {
     breakAnimationSprites[i] =
         createSprite(BreakablePlatformConfig::SPRITE_BREAK_PATHS[i]);
-    if (breakAnimationSprites[i]) {
-      setSpriteSize(breakAnimationSprites[i], PlatformConfig::WIDTH,
-                    PlatformConfig::HEIGHT);
+    if (!breakAnimationSprites[i]) {
+      std::cerr << "[PlatformFactory::initializeBreakAnimationSprites] failed "
+                   "to load break sprite "
+                << i << ", using fallback" << std::endl;
+      breakAnimationSprites[i] = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
     }
+
+    setSpriteSize(breakAnimationSprites[i], PlatformConfig::WIDTH,
+                  PlatformConfig::HEIGHT);
   }
 }
 

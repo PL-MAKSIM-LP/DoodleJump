@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "../core/Constants.h"
 #include "core/Constants.h"
 
 ProjectileManager::ProjectileManager() {}
@@ -20,12 +21,21 @@ ProjectileManager::~ProjectileManager() {
 
 void ProjectileManager::init() {
   std::cerr << "[ProjectileManager::init]" << std::endl;
-  sprite = createSprite("../sprites/projectile.png");
+
+  sprite = createSprite(ProjectileConfig::PROJECTILE_SPRITE_PATH);
   if (sprite) {
     setSpriteSize(sprite, ProjectileConfig::W, ProjectileConfig::H);
     std::cerr << "[ProjectileManager::init] Sprite loaded" << std::endl;
   } else {
-    std::cerr << "[ProjectileManager::init] Failed to load sprite" << std::endl;
+    std::cerr
+        << "[ProjectileManager::init] Failed to load sprite, using fallback"
+        << std::endl;
+    sprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
+  if (sprite) {
+    std::cerr << "[ProjectileManager::init] Sprite loaded successfully"
+              << std::endl;
   }
 }
 

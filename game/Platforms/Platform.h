@@ -37,11 +37,8 @@ class IPlatform {
 
   bool isColliding(const Player& player) const;
 
-  virtual ~IPlatform() {
-    // Sprites are owned by PlatformFactory, not by individual platforms.
-    // Do not delete them here.
-    sprite = nullptr;
-  }
+  virtual ~IPlatform() { sprite = nullptr; }
+  bool reached = false;
 
  protected:
   int h = PlatformConfig::HEIGHT;

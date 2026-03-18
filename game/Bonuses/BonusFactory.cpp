@@ -19,20 +19,24 @@ BonusFactory::~BonusFactory() {
 std::unique_ptr<IBonus> BonusFactory::create(int x, int y, BonusType type) {
   if (!coinSprite) {
     std::cerr << "BonusFactory::create Loading coin sprite" << std::endl;
-    coinSprite = createSprite("../sprites/coin.png");
-    if (coinSprite) {
-      setSpriteSize(coinSprite, BonusConfig::COIN_W, BonusConfig::COIN_H);
-      std::cerr << "Coin sprite loaded successfully" << std::endl;
+    coinSprite = createSprite(BonusConfig::COIN_SPRITE_PATH);
+    if (!coinSprite) {
+      coinSprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
     }
+    setSpriteSize(coinSprite, BonusConfig::COIN_W, BonusConfig::COIN_H);
   }
 
   if (!trampolineSprite) {
     std::cerr << "BonusFactory::create Loading trampoline sprite" << std::endl;
-    trampolineSprite = createSprite("../sprites/trampoline.png");
+    trampolineSprite = createSprite(BonusConfig::TRAMPOLINE_SPRITE_PATH);
     if (trampolineSprite) {
       setSpriteSize(trampolineSprite, BonusConfig::TRAMPOLINE_W,
                     BonusConfig::TRAMPOLINE_H);
       std::cerr << "Trampoline sprite loaded successfully" << std::endl;
+    } else {
+      trampolineSprite = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+      std::cerr << "Failed to load trampoline sprite, using fallback"
+                << std::endl;
     }
   }
 

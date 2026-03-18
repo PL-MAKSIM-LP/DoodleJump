@@ -28,9 +28,14 @@ void EnemyManager::init(int w, int h) {
 
   lastSpawnY = static_cast<float>(screenHeight);
 
-  std::cerr << "[EnemyManager::init] set screenSize=" << screenWidth << "x"
-            << screenHeight << " spawnStartY=" << spawnStartY
-            << " lastSpawnY=" << lastSpawnY << std::endl;
+  // Определяем позицию спауна в зависимости от сложности
+  float enemySpawnY = spawnStartY;
+  if (GameConfig::GAME_DIFFICULTY >= GameDifficulty::MEDIUM) {
+    // На MEDIUM и выше - спаунимо за пределами экрана (выше верхней границы)
+    enemySpawnY = -EnemyConfig::SPAWN_OFFSCREEN_PADDING;
+  }
+
+  spawnEnemy(enemySpawnY);
 }
 
 void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
@@ -86,8 +91,13 @@ EnemyCollision EnemyManager::checkPlayerCollision(const Player &player) {
   for (auto &e : enemies) {
     if (!e->isAlive()) continue;
 
-    Object playerObj{player.x, player.y, player.width, player.height};
-    Object enemyObj{e->getX(), e->getY(), e->getW(), e->getH()};
+    Object playerObj{static_cast<float>(player.x), static_cast<float>(player.y),
+                     static_cast<float>(player.width),
+                     static_cast<float>(player.height)};
+
+    Object enemyObj{
+        static_cast<float>(e->getX()), static_cast<float>(e->getY()),
+        static_cast<float>(e->getW()), static_cast<float>(e->getH())};
 
     if (checkCollision(playerObj, enemyObj)) {
       float playerCenterY = player.y + static_cast<float>(player.height) / 2.0f;
@@ -106,7 +116,9 @@ bool EnemyManager::checkProjectileCollision(const Object &projectile) {
   for (auto &e : enemies) {
     if (!e->isAlive()) continue;
 
-    Object enemy{e->getX(), e->getY(), e->getW(), e->getH()};
+    Object enemy{static_cast<float>(e->getX()), static_cast<float>(e->getY()),
+                 static_cast<float>(e->getW()), static_cast<float>(e->getH())};
+
     if (checkCollision(projectile, enemy)) {
       e->setAlive(false);
       return true;
@@ -123,33 +135,25 @@ bool EnemyManager::checkCollision(const Object &obj1,
 
 void EnemyManager::spawnEnemy(float y) {
   if (!rng) {
-    std::cerr << "[EnemyManager::spawnEnemy]  Random generator not set!"
+    std::cerr << "[EnemyManager::spawnEnemy] Random generator not set!"
               << std::endl;
     return;
   }
 
+  // Спаунимо в случайной X позиции
   std::uniform_int_distribution<int> xDist(
       0, std::max(0, screenWidth - EnemyConfig::X_MARGIN));
+  int spawnX = xDist(*rng);
 
-  auto tooCloseX = [&](int candidateX) {
-    // TODO
-  };
-
-  if (platformManager) {
-    const auto &plats = platformManager->getPlatforms();
-    for (const auto &plat : plats) {
-      if (!plat->active || plat->type != PlatformType::NORMAL) continue;
-
-      // TODO
-    }
+  // Всегда спаунимо летающего врага
+  auto enemy =
+      enemyFactory.create(spawnX, static_cast<int>(y), EnemyType::FLYING);
+  if (enemy) {
+    enemies.push_back(std::move(enemy));
+    const char *spawnLocation = (y < 0) ? "OFFSCREEN (above)" : "onscreen";
+    std::cerr << "[EnemyManager::spawnEnemy] Spawned FLYING enemy at ("
+              << spawnX << ", " << y << ") - " << spawnLocation << std::endl;
   }
-
-  for (int attempt = 0; attempt < EnemyConfig::SPAWN_X_ATTEMPTS; ++attempt) {
-    // TODO
-  }
-
-  std::cerr << "🟡 [EnemyManager::spawnEnemy] Failed to spawn at y=" << y
-            << " (spacing constraints)" << std::endl;
 }
 
 void EnemyManager::clear() {

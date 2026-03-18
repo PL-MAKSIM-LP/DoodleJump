@@ -8,6 +8,7 @@
 #include "../Platforms/Platform.h"
 #include "../Platforms/PlatformFactory.h"
 #include "../Player/Player.h"
+#include "../Score/ScoreDisplay.h"
 #include "core/Constants.h"
 
 enum class DifficultyZone { EASY, MEDIUM, HARD, EXTREME };
@@ -18,7 +19,7 @@ class PlatformManager {
   ~PlatformManager();
 
   void init(int screenWidth, int screenHeight);
-  void update(float dt, Player& player);
+  void update(float dt, Player& player, ScoreDisplay& scoreDisplay);
   void render(const Camera& camera);
 
   void spawn(float x, float y, PlatformType type);

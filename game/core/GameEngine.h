@@ -36,6 +36,7 @@ class GameEngine {
   ScoreDisplay& getScoreDisplay() { return scoreDisplay; }
 
   void resetGame();
+  void restartGame();
 
  private:
   int screenWidth;

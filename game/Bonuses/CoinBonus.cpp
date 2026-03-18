@@ -16,6 +16,6 @@ void CoinBonus::update(float, int) {
 
 void CoinBonus::applyEffect(Player&) {
   std::cerr << "[CoinBonus::applyEffect] Setting alive=false" << std::endl;
-  GameData::addCoins(CoinsConfig::COIN_VALUE);
+  GameData::addCoins(BonusConfig::COIN_VALUE);
   this->alive = false;
 }

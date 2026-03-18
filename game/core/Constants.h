@@ -1,22 +1,27 @@
 // Centralized game constants to avoid magic numbers in source files
 #pragma once
 
+// Game difficulty levels
+enum class GameDifficulty { EASY, MEDIUM, HARD };
+
 namespace GameConfig {
 constexpr int DEFAULT_WIDTH = 390;
 constexpr int DEFAULT_HEIGHT = 844;
 constexpr int MAX_WIDTH = 1920;
 constexpr int MAX_HEIGHT = 1080;
+constexpr GameDifficulty GAME_DIFFICULTY = GameDifficulty::MEDIUM;
 }  // namespace GameConfig
 
 namespace PlayerConfig {
 constexpr int JumpHeight = 300;
-
+constexpr const char* SPRITE_LEFT_PATH = "../sprites/player/lik-left.png";
+constexpr const char* SPRITE_RIGHT_PATH = "../sprites/player/lik-right.png";
 }  // namespace PlayerConfig
+
 namespace CameraConfig {
 constexpr float DESIRED_SCREEN_Y_FRAC = 0.40f;
-}
+}  // namespace CameraConfig
 
-// ========== PLATFORM CONFIG ==========
 namespace PlatformConfig {
 constexpr int WIDTH = 70;
 constexpr int HEIGHT = 18;
@@ -59,13 +64,12 @@ constexpr float SWING = 50.0f;
 }  // namespace MovingPlatformConfig
 
 namespace BreakablePlatformConfig {
-constexpr int MAX_BREAK_SPRITES = 4;  // Number of break animation frames
-constexpr int MAX_BREAK_STAGES = 3;   // Last stage before falling
+constexpr int MAX_BREAK_SPRITES = 4;
+constexpr int MAX_BREAK_STAGES = 3;
 constexpr float BREAK_STEP_DURATION = 0.12f;
 constexpr float FALL_SPEED = 200.0f;
 constexpr float OFFSCREEN_PADDING = 1000.0f;
 
-// Breakable platform sprite paths
 constexpr const char* SPRITE_BREAK_PATHS[MAX_BREAK_SPRITES] = {
     "../sprites/break1.png",
     "../sprites/break2.png",
@@ -74,41 +78,23 @@ constexpr const char* SPRITE_BREAK_PATHS[MAX_BREAK_SPRITES] = {
 };
 }  // namespace BreakablePlatformConfig
 
-// ========== ENEMY CONFIG ==========
 namespace EnemyConfig {
 // Sprite paths
-constexpr const char* SPRITE_GROUNDED_PATH = "../sprites/enemyGrounded.png";
-constexpr const char* SPRITE_FLYING_FALLBACK = "../sprites/enemyFlying.png";
 constexpr const char* SPRITE_FLYING_BASE_PATH =
-    "../sprites/flying";  // for {1,2,3}.png
+    "../sprites/enemy/flying";  // for {1,2,3,4}.png
 
 // Animation
-constexpr int FLY_FRAMES_COUNT = 3;
-constexpr int GROUNDED_WALK_FRAMES_COUNT = 3;
+constexpr int FLY_FRAMES_COUNT = 4;
 
 // Spawning
-constexpr float SPAWN_INTERVAL = 150.0f;  // world-space distance between spawns
-constexpr float SPAWN_START_OFFSET =
-    2000.0f;  // start spawning when playerY <= screenHeight - OFFSET
-constexpr float SPAWN_AHEAD_EXTRA =
-    200.0f;  // place spawned enemies this far above player
-constexpr int INITIAL_BATCH =
-    5;  // initial number of enemies to spawn when enabling
-constexpr int DESIRED_ENEMIES = 5;   // target number of active enemies
-constexpr int SPAWN_X_ATTEMPTS = 8;  // attempts to find valid X position
-constexpr float MIN_HORIZONTAL_SPACING =
-    500.0f;  // minimum distance between spawned enemies
+constexpr float SPAWN_START_OFFSET = 2000.0f;
+constexpr float SPAWN_OFFSCREEN_PADDING = 100.0f;
 
 // Placement and removal
-constexpr float REMOVE_SCREEN_PADDING =
-    200.0f;                   // how far past screen before removing enemy
-constexpr int X_MARGIN = 50;  // margin used when sampling random X positions
-constexpr float PLATFORM_TOLERANCE =
-    40.0f;  // tolerance when matching platform Y for grounded spawn
+constexpr float REMOVE_SCREEN_PADDING = 200.0f;
+constexpr int X_MARGIN = 50;
 
 // Visual sizes
-constexpr int GROUND_W = 130;
-constexpr int GROUND_H = 70;
 constexpr int FLY_W = 60;
 constexpr int FLY_H = 60;
 }  // namespace EnemyConfig
@@ -120,41 +106,58 @@ constexpr int H = 20;
 constexpr float DEFAULT_VELY = -600.0f;
 constexpr float SHOOT_SPEED = 700.0f;
 constexpr float OFFSCREEN_PADDING = 200.0f;
-
 constexpr unsigned int SHOOT_LIFETIME = 1000;  // milliseconds
+
+constexpr const char* PROJECTILE_SPRITE_PATH = "../sprites/projectile.png";
 }  // namespace ProjectileConfig
 
 // ========== BONUS CONFIG ==========
 namespace BonusConfig {
-// Spawn
-constexpr float SPAWN_INTERVAL = 500.0f;
-constexpr float SPAWN_START_OFFSET = 1200.0f;
-constexpr float SPAWN_AHEAD_EXTRA = 200.0f;
-constexpr int INITIAL_BATCH = 2;
-
-// Removal
-constexpr float REMOVE_SCREEN_PADDING = 200.0f;
+// Game start and currency
+constexpr int STARTING_COINS = 50;
 
 // Coin config
 constexpr int COIN_VALUE = 10;
 constexpr int COIN_W = 24;
 constexpr int COIN_H = 24;
+constexpr int MAX_TOTAL_COINS = 10;
+constexpr int MAX_SCREEN_COINS = 3;
+constexpr float COIN_SPAWN_CHANCE = 0.30f;
+constexpr const char* COIN_SPRITE_PATH = "../sprites/bonuses/coin.png";
 
 // Trampoline config
-constexpr int TRAMPOLINE_VALUE = 15;
+constexpr int TRAMPOLINE_SPAWN_COST = 20;  // Cost to spawn trampoline
 constexpr int TRAMPOLINE_W = 70;
 constexpr int TRAMPOLINE_H = 20;
-constexpr float TRAMPOLINE_PROBABILITY = 0.20f;
 constexpr float TRAMPOLINE_BOOST_MULT = 1.7f;
 constexpr int TRAMPOLINE_LIFE_TIME = 20000;  // milliseconds
+constexpr const char* TRAMPOLINE_SPRITE_PATH =
+    "../sprites/bonuses/trampoline.png";
 
-// Misc
-constexpr float COIN_PLATFORM_OFFSET = 18.0f;
+// Bonus removal
+constexpr float REMOVE_SCREEN_PADDING = 200.0f;
 }  // namespace BonusConfig
 
-// ========== COINS & CURRENCY CONFIG ==========
-namespace CoinsConfig {
-constexpr int COIN_VALUE = 10;
-constexpr int START_VALUE = 50;
-constexpr int TRAMPOLINE_VALUE = 20;
-}  // namespace CoinsConfig
+// ========== SCORE DISPLAY CONFIG ==========
+namespace ScoreConfig {
+constexpr const char* DIGIT_SPRITE_PATHS[10] = {
+    "../sprites/score/0.png",  // 0
+    "../sprites/score/1.png",  // 1
+    "../sprites/score/2.png",  // 2
+    "../sprites/score/3.png",  // 3
+    "../sprites/score/4.png",  // 4
+    "../sprites/score/5.png",  // 5
+    "../sprites/score/6.png",  // 6
+    "../sprites/score/7.png",  // 7
+    "../sprites/score/8.png",  // 8
+    "../sprites/score/9.png",  // 9
+};
+}  // namespace ScoreConfig
+
+namespace DebugConfig {
+constexpr const char* DEFAULT_SPRITE_PATH = "../sprites/fallback.png";
+}
+
+namespace BGConfig {
+constexpr const char* BG_SPRITE_PATH = "../sprites/jungle-bck@2x.png";
+}

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "core/Constants.h"
+
 Player::Player() {}
 
 Player::~Player() {
@@ -19,8 +21,16 @@ Player::~Player() {
 void Player::init(int screenWidth, int screenHeight) {
   std::cerr << "[Player::init] screenSize=" << screenWidth << "x"
             << screenHeight << std::endl;
-  spriteLeft = createSprite("../sprites/lik-left.png");
-  spriteRight = createSprite("../sprites/lik-right.png");
+  spriteLeft = createSprite(PlayerConfig::SPRITE_LEFT_PATH);
+  spriteRight = createSprite(PlayerConfig::SPRITE_RIGHT_PATH);
+
+  if (!spriteLeft) {
+    spriteLeft = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+  if (!spriteRight) {
+    spriteRight = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
   lastSprite = spriteLeft;
 
   if (spriteLeft)
@@ -73,12 +83,16 @@ void Player::update(float dt, int screenWidth) {
 
 void Player::render(const Camera& camera) {
   float screenY = camera.toScreenY(y);
-  if (velX > 0) {
-    drawSprite(spriteRight, x, static_cast<int>(screenY));
-  } else if (velX < 0) {
-    drawSprite(spriteLeft, x, static_cast<int>(screenY));
-  } else {
-    drawSprite(lastSprite, x, static_cast<int>(screenY));
+
+  Sprite* spriteToRender = lastSprite;
+  if (velX > 0 && spriteRight) {
+    spriteToRender = spriteRight;
+  } else if (velX < 0 && spriteLeft) {
+    spriteToRender = spriteLeft;
+  }
+
+  if (spriteToRender) {
+    drawSprite(spriteToRender, x, static_cast<int>(screenY));
   }
 }
 

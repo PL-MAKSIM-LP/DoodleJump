@@ -11,8 +11,8 @@ class SpawnTrampolineCommand : public ICommand {
 
   virtual void execute(Player&) override {
     if (bonusManager && !bonusManager->spawnedTrampoline &&
-        GameData::getCoins() >= CoinsConfig::TRAMPOLINE_VALUE) {
-      GameData::addCoins(-CoinsConfig::TRAMPOLINE_VALUE);
+        GameData::getCoins() >= BonusConfig::TRAMPOLINE_SPAWN_COST) {
+      GameData::addCoins(-BonusConfig::TRAMPOLINE_SPAWN_COST);
       bonusManager->spawnedTrampoline = true;
     }
   }

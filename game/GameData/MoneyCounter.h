@@ -5,7 +5,7 @@
 
 class MoneyCounter {
  public:
-  MoneyCounter() : coins(CoinsConfig::START_VALUE) {
+  MoneyCounter() : coins(BonusConfig::STARTING_COINS) {
     std::cerr << "[MoneyCounter::constructor] Created with coins=" << coins
               << std::endl;
   }
@@ -21,7 +21,7 @@ class MoneyCounter {
 
   void reset() {
     std::cerr << "[MoneyCounter::reset]" << std::endl;
-    coins = CoinsConfig::START_VALUE;
+    coins = BonusConfig::STARTING_COINS;
   }
 
  private:

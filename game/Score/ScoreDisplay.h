@@ -10,14 +10,19 @@ class ScoreDisplay {
   void init();
   void setScore(int s) { score = s; }
   int getScore() const { return score; }
+  void reachPlatform() { reached++; }
 
-  // Отображение счета монет в левом верхнем углу
   void render();
 
  private:
-  int score = 0;
-  Sprite* digitSprites[10] = {};  // Спрайты для цифр 0-9
+  static constexpr int DIGIT_WIDTH = 20;
+  static constexpr int DIGIT_HEIGHT = 30;
 
-  void renderDigit(int digit, int x, int y);
+  int reached;
+  int score = 0;
+  Sprite* digitSprites[10] = {};  // 10 спрайтов для цифр 0-9
+
   void renderNumber(int number, int x, int y);
+  void renderDigit(int digit, int x, int y);
 };
+;

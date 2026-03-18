@@ -10,16 +10,10 @@
 #include "GroundedEnemy.h"
 #include "core/Constants.h"
 
-EnemyFactory::EnemyFactory()
-    : groundSprite(nullptr), flyingFramesInitialized(false) {}
+EnemyFactory::EnemyFactory() : flyingFramesInitialized(false) {}
 
 EnemyFactory::~EnemyFactory() {
   std::cerr << "[EnemyFactory::~EnemyFactory] start" << std::endl;
-
-  if (groundSprite) {
-    destroySprite(groundSprite);
-    groundSprite = nullptr;
-  }
 
   for (auto f : flyingFrames) {
     if (f) {
@@ -57,19 +51,6 @@ std::unique_ptr<IEnemy> EnemyFactory::create(int x, int y, EnemyType type) {
       if (!flyingFrames.empty()) {
         enemy->setFlyFrames(flyingFrames, 0.12f);
       }
-      return enemy;
-    }
-    case EnemyType::GROUND: {
-      if (!groundSprite) {
-        groundSprite = createSprite(EnemyConfig::SPRITE_GROUNDED_PATH);
-        if (groundSprite) {
-          setSpriteSize(groundSprite, EnemyConfig::GROUND_W,
-                        EnemyConfig::GROUND_H);
-        }
-      }
-
-      auto enemy = std::make_unique<GroundedEnemy>();
-      enemy->init(x, y, groundSprite, type);
       return enemy;
     }
     default:

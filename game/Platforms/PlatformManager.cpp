@@ -26,35 +26,29 @@ void PlatformManager::init(int screenWidth_, int screenHeight_) {
 }
 
 void PlatformManager::render(const Camera& camera) {
-  // std::cerr << "[PlatformManager::render] count=" << platforms.size()
-  //           << std::endl;
   int idx = 0;
   for (const auto& p : platforms) {
     float screenY = camera.toScreenY(p->y);
-    // std::cerr << "  p[" << idx++ << "] x=" << p->x << " y=" << p->y
-    //           << " screenY=" << screenY << " active=" << p->active <<
-    //           std::endl;
     if (p->active) p->render(camera);
   }
 }
 
-void PlatformManager::update(float dt, Player& player) {
+void PlatformManager::update(float dt, Player& player,
+                             ScoreDisplay& scoreDisplay) {
   for (auto& p : platforms) {
     if (p->active) p->update(dt, screenHeight);
+    if (player.y < p->y && !p->reached) {
+      p->reached = true;
+      scoreDisplay.reachPlatform();
+    }
   }
 
-  // Remove platforms that are far below the player (off-screen below)
-  // Use minY to account for moving platforms that swing up/down
   float minRemovalY =
       player.y + screenHeight + EnemyConfig::REMOVE_SCREEN_PADDING;
 
   platforms.erase(std::remove_if(platforms.begin(), platforms.end(),
                                  [&](const std::unique_ptr<IPlatform>& p) {
-                                   // Remove inactive platforms (e.g., broken
-                                   // breakable platforms)
                                    if (!p->active) return true;
-                                   // Remove platforms that fall off-screen
-                                   // below
                                    if (p->y > minRemovalY) {
                                      return true;
                                    }

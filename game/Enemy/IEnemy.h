@@ -25,13 +25,9 @@ class IEnemy {
     this->y = y;
     this->sprite = spr;
     this->type = t;
-    if (type == EnemyType::FLYING) {
-      w = EnemyConfig::FLY_W;
-      h = EnemyConfig::FLY_H;
-    } else {
-      w = EnemyConfig::GROUND_W;
-      h = EnemyConfig::GROUND_H;
-    }
+    // Always use flying enemy dimensions
+    w = EnemyConfig::FLY_W;
+    h = EnemyConfig::FLY_H;
   }
 
   virtual bool isAlive() const { return alive; }
