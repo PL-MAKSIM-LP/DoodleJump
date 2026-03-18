@@ -36,8 +36,6 @@ class MyFramework : public Framework {
   }
 
   virtual bool Init() {
-    std::cerr << "MyFramework::Init()" << std::endl;
-
     SpriteHelper::BytesArrayToPNG();
 
     background = createSprite(BGConfig::BG_SPRITE_PATH);
@@ -61,12 +59,10 @@ class MyFramework : public Framework {
     float dt = (now - lastTick) / 1000.0f;
     lastTick = now;
 
-    // Всегда рисуем фон (если загружен)
     if (background) {
       drawSprite(background, 0, 0);
     }
 
-    // Обновляем и рендерим игру через GameEngine
     gameEngine.update(dt);
     gameEngine.render();
 
@@ -89,6 +85,8 @@ class MyFramework : public Framework {
         gameEngine.getInputHandler().handleMousePressed(button,
                                                         gameEngine.getPlayer());
       }
+    } else if (gameEngine.getState() == GameState::GAME_OVER) {
+      gameEngine.restartGame();
     }
   }
 

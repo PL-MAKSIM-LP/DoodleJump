@@ -22,11 +22,10 @@ GameEngine::~GameEngine() {
   enemyManager.clear();
   bonusManager.clear();
   projectileManager.clear();
+  if (gameOverSprite) destroySprite(gameOverSprite);
 }
 
 void GameEngine::init() {
-  std::cerr << "[GameEngine::init()] start" << std::endl;
-
   auto shootCmd = std::make_unique<ShootCommand>(&projectileManager, &camera);
   inputHandler.setCommand(FRKey::LEFT, std::make_unique<MoveLeftCommand>());
   inputHandler.setCommand(FRKey::RIGHT, std::make_unique<MoveRightCommand>());
@@ -44,12 +43,19 @@ void GameEngine::init() {
   bonusManager.setRandomGenerator(rng);
   projectileManager.init();
 
+  gameOverSprite = createSprite(DebugConfig::GAME_OVER_SPRITE_PATH);
+  if (!gameOverSprite) {
+    std::cerr << "[GameEngine::init()] Failed to load game over sprite"
+              << std::endl;
+    createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
+  setSpriteSize(gameOverSprite, 200, 50);
+
   state = GameState::MENU;
-  std::cerr << "[GameEngine::init()] end" << std::endl;
 }
 
 void GameEngine::resetGame() {
-  std::cerr << "[GameEngine::resetGame()] start" << std::endl;
   platformManager.clear();
   platformManager.init(screenWidth, screenHeight);
   platformManager.setRandomGenerator(rng);
@@ -73,11 +79,7 @@ void GameEngine::resetGame() {
 
   GameData::resetCoins();
 
-  // Don't recreate commands on reset—reuse the ones created in init()
-  // This avoids allocating/deallocating command objects repeatedly
-
   state = GameState::PLAYING;
-  std::cerr << "[GameEngine::resetGame()] end" << std::endl;
 }
 
 void GameEngine::update(float dt) {
@@ -100,7 +102,7 @@ void GameEngine::updateMenu() {
 }
 
 void GameEngine::updatePlaying(float dt) {
-  player.update(dt, screenWidth);
+  player.update(dt, screenWidth, camera);
   platformManager.update(dt, player, scoreDisplay);
   enemyManager.update(dt, screenWidth, camera, player.y);
   projectileManager.update(dt, camera);
@@ -109,7 +111,7 @@ void GameEngine::updatePlaying(float dt) {
   EnemyCollision collisionResult = enemyManager.checkPlayerCollision(player);
   if (collisionResult == EnemyCollision::HIT) {
     std::cerr << "[GameEngine::updatePlaying()] GAME OVER" << std::endl;
-    // state = GameState::GAME_OVER;
+    state = GameState::GAME_OVER;
     return;
   } else if (collisionResult == EnemyCollision::STOMP) {
     std::cerr << "[GameEngine::updatePlaying()] Player stomped on enemy"
@@ -137,31 +139,25 @@ void GameEngine::updatePlaying(float dt) {
   }
 }
 
-void GameEngine::updateGameOver() {
-  // Ждём нажатия кнопки для рестарта
-  // Клавиши обрабатываются в game.cpp
-  camera.update(player.y, screenHeight);
-}
+void GameEngine::updateGameOver() { camera.update(player.y, screenHeight); }
 
 void GameEngine::restartGame() {
-  std::cerr << "[GameEngine::restartGame()] restarting game" << std::endl;
   resetGame();
 }
 
 void GameEngine::render() {
   switch (state) {
     case GameState::MENU:
-      // renderMenu();
       break;
     case GameState::PLAYING:
       renderGame();
       break;
     case GameState::GAME_OVER:
-      renderGame();  // Продолжаем показывать игру
-      std::cerr << "\n========== GAME OVER ==========" << std::endl;
-      std::cerr << "Your score: " << scoreDisplay.getScore() << std::endl;
-      std::cerr << "Press SPACE or ENTER to restart" << std::endl;
-      std::cerr << "==============================\n" << std::endl;
+      renderGame();
+      if (gameOverSprite) {
+        drawSprite(gameOverSprite, (screenWidth - 200) / 2,
+                   (screenHeight - 50) / 2);
+      }
       break;
   }
 }

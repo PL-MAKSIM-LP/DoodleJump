@@ -2,7 +2,7 @@
 
 #include "Platform.h"
 
-class PlatformFactory;  // Forward declaration
+class PlatformFactory;
 
 class BreakablePlatform : public IPlatform {
  public:

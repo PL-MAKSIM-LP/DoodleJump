@@ -28,6 +28,19 @@ void ScoreDisplay::init() {
       digitSprites[i] = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
     }
   }
+
+  BG = createSprite(ScoreConfig::BG_SPRITE_PATH);
+  if (BG) {
+    setSpriteSize(BG, DIGIT_WIDTH, DIGIT_HEIGHT);
+    std::cerr << "[ScoreDisplay] BG loaded successfully" << std::endl;
+  } else {
+    BG = createSprite(DebugConfig::DEFAULT_SPRITE_PATH);
+  }
+
+  int bgHeight;
+  getScreenSize(bgWidth, bgHeight);
+  setSpriteSize(BG, bgWidth, 40);
+
   reached = 0;
 }
 
@@ -56,6 +69,9 @@ void ScoreDisplay::renderNumber(int number, int x, int y) {
 }
 
 void ScoreDisplay::render() {
-  renderNumber(score, 120, 20);
-  renderNumber(reached, 40, 60);
+  drawSprite(BG, 0, 0);
+  renderNumber(score,
+               bgWidth / 2 - (DIGIT_WIDTH * std::to_string(score).length()) / 2,
+               0);
+  renderNumber(reached, 0, 5);
 }

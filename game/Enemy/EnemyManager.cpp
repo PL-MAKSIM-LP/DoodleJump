@@ -8,8 +8,6 @@
 #include "../Platforms/PlatformManager.h"
 #include "EnemyFactory.h"
 
-// default constructor/destructor are used
-
 void EnemyManager::setPlatformManager(class PlatformManager *pm) {
   platformManager = pm;
   if (!pm) {
@@ -28,20 +26,18 @@ void EnemyManager::init(int w, int h) {
 
   lastSpawnY = static_cast<float>(screenHeight);
 
-  // Определяем позицию спауна в зависимости от сложности
   float enemySpawnY = spawnStartY;
   if (GameConfig::GAME_DIFFICULTY >= GameDifficulty::MEDIUM) {
-    // На MEDIUM и выше - спаунимо за пределами экрана (выше верхней границы)
     enemySpawnY = -EnemyConfig::SPAWN_OFFSCREEN_PADDING;
   }
 
-  spawnEnemy(enemySpawnY);
+  int spawnX = screenWidth / 2;
+  spawnEnemy(spawnX, enemySpawnY);
 }
 
 void EnemyManager::update(float dt, int screenWidth_, const Camera &camera,
                           float playerY) {
   updateEnemiesFromCamera(dt, screenWidth_, camera);
-  spawnMissingEnemies(playerY);
   updateSpawnLogic(playerY);
   cleanupDeadEnemies(camera);
 }
@@ -81,11 +77,19 @@ void EnemyManager::cleanupDeadEnemies(const Camera &camera) {
       enemies.end());
 }
 
-void EnemyManager::updateSpawnLogic(float playerY) {}
+void EnemyManager::updateSpawnLogic(float playerY) {
+  if (!rng) return;
 
-void EnemyManager::spawnInitialBatch(float playerY) {}
+  int aliveEnemies = countAliveEnemies();
 
-void EnemyManager::spawnMissingEnemies(float playerY) {}
+  if (aliveEnemies < EnemyConfig::MAX_ENEMIES) {
+    float spawnX = 20.0f + static_cast<float>((*rng)() % (screenWidth - 40));
+    float spawnY =
+        -(screenHeight + static_cast<float>((*rng)() % (screenHeight)));
+
+    spawnEnemy(static_cast<int>(spawnX), playerY + spawnY);
+  }
+}
 
 EnemyCollision EnemyManager::checkPlayerCollision(const Player &player) {
   for (auto &e : enemies) {
@@ -133,26 +137,18 @@ bool EnemyManager::checkCollision(const Object &obj1,
            obj1.y + obj1.h <= obj2.y || obj1.y >= obj2.y + obj2.h);
 }
 
-void EnemyManager::spawnEnemy(float y) {
+void EnemyManager::spawnEnemy(int x, float y) {
   if (!rng) {
     std::cerr << "[EnemyManager::spawnEnemy] Random generator not set!"
               << std::endl;
     return;
   }
-
-  // Спаунимо в случайной X позиции
-  std::uniform_int_distribution<int> xDist(
-      0, std::max(0, screenWidth - EnemyConfig::X_MARGIN));
-  int spawnX = xDist(*rng);
-
-  // Всегда спаунимо летающего врага
-  auto enemy =
-      enemyFactory.create(spawnX, static_cast<int>(y), EnemyType::FLYING);
+  auto enemy = enemyFactory.create(x, static_cast<int>(y), EnemyType::FLYING);
   if (enemy) {
     enemies.push_back(std::move(enemy));
     const char *spawnLocation = (y < 0) ? "OFFSCREEN (above)" : "onscreen";
-    std::cerr << "[EnemyManager::spawnEnemy] Spawned FLYING enemy at ("
-              << spawnX << ", " << y << ") - " << spawnLocation << std::endl;
+    std::cerr << "[EnemyManager::spawnEnemy] Spawned FLYING enemy at (" << x
+              << ", " << y << ") - " << spawnLocation << std::endl;
   }
 }
 

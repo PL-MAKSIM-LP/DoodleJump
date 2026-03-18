@@ -24,7 +24,7 @@ class Player {
   ~Player();
 
   void init(int screenWidth, int screenHeight);
-  void update(float dt, int screenWidth);
+  void update(float dt, int screenWidth, const Camera& camera);
   void render(const Camera& camera);
 
   void startMoveLeft();

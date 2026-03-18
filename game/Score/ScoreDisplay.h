@@ -20,7 +20,9 @@ class ScoreDisplay {
 
   int reached;
   int score = 0;
-  Sprite* digitSprites[10] = {};  // 10 спрайтов для цифр 0-9
+  int bgWidth = 0;
+  Sprite* digitSprites[10] = {};
+  Sprite* BG = nullptr;
 
   void renderNumber(int number, int x, int y);
   void renderDigit(int digit, int x, int y);

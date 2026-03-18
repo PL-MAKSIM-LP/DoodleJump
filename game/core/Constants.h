@@ -1,7 +1,6 @@
-// Centralized game constants to avoid magic numbers in source files
+
 #pragma once
 
-// Game difficulty levels
 enum class GameDifficulty { EASY, MEDIUM, HARD };
 
 namespace GameConfig {
@@ -26,7 +25,6 @@ namespace PlatformConfig {
 constexpr int WIDTH = 70;
 constexpr int HEIGHT = 18;
 
-// Sprite paths
 constexpr const char* SPRITE_NORMAL_PATH = "../sprites/platforms/normal.png";
 constexpr const char* SPRITE_MOVING_H_PATH =
     "../sprites/platforms/moveHorizontal.png";
@@ -48,10 +46,8 @@ constexpr float HIGH_GAP = 250.0f;
 constexpr float RAND_R_MIN = 0.0f;
 constexpr float RAND_R_MAX = 1.0f;
 
-// initial spawn X
 constexpr int INITIAL_SPAWN_X = 100;
 
-// probabilities for platform selection (threshold comparisons)
 constexpr float PROB_MEDIUM_NORMAL = 0.80f;
 constexpr float PROB_VERYHIGH_NORMAL = 0.60f;
 constexpr float PROB_VERYHIGH_MOVINGH = 0.90f;
@@ -81,27 +77,22 @@ constexpr const char* SPRITE_BREAK_PATHS[MAX_BREAK_SPRITES] = {
 }  // namespace BreakablePlatformConfig
 
 namespace EnemyConfig {
-// Sprite paths
 constexpr const char* SPRITE_FLYING_BASE_PATH =
     "../sprites/enemy/flying";  // for {1,2,3,4}.png
 
-// Animation
 constexpr int FLY_FRAMES_COUNT = 4;
 
-// Spawning
 constexpr float SPAWN_START_OFFSET = 2000.0f;
 constexpr float SPAWN_OFFSCREEN_PADDING = 100.0f;
+constexpr int MAX_ENEMIES = 3;
 
-// Placement and removal
 constexpr float REMOVE_SCREEN_PADDING = 200.0f;
 constexpr int X_MARGIN = 50;
 
-// Visual sizes
 constexpr int FLY_W = 60;
 constexpr int FLY_H = 60;
 }  // namespace EnemyConfig
 
-// ========== PROJECTILE CONFIG ==========
 namespace ProjectileConfig {
 constexpr int W = 10;
 constexpr int H = 20;
@@ -115,10 +106,8 @@ constexpr const char* PROJECTILE_SPRITE_PATH = "../sprites/projectile.png";
 
 // ========== BONUS CONFIG ==========
 namespace BonusConfig {
-// Game start and currency
-constexpr int STARTING_COINS = 50;
 
-// Coin config
+constexpr int STARTING_COINS = 50;
 constexpr int COIN_VALUE = 10;
 constexpr int COIN_W = 24;
 constexpr int COIN_H = 24;
@@ -127,8 +116,7 @@ constexpr int MAX_SCREEN_COINS = 3;
 constexpr float COIN_SPAWN_CHANCE = 0.30f;
 constexpr const char* COIN_SPRITE_PATH = "../sprites/bonuses/coin.png";
 
-// Trampoline config
-constexpr int TRAMPOLINE_SPAWN_COST = 20;  // Cost to spawn trampoline
+constexpr int TRAMPOLINE_SPAWN_COST = 20;
 constexpr int TRAMPOLINE_W = 70;
 constexpr int TRAMPOLINE_H = 20;
 constexpr float TRAMPOLINE_BOOST_MULT = 1.7f;
@@ -136,29 +124,25 @@ constexpr int TRAMPOLINE_LIFE_TIME = 30000;  // milliseconds
 constexpr const char* TRAMPOLINE_SPRITE_PATH =
     "../sprites/bonuses/trampoline.png";
 
-// Bonus removal
 constexpr float REMOVE_SCREEN_PADDING = 200.0f;
 }  // namespace BonusConfig
 
-// ========== SCORE DISPLAY CONFIG ==========
 namespace ScoreConfig {
 constexpr const char* DIGIT_SPRITE_PATHS[10] = {
-    "../sprites/score/0.png",  // 0
-    "../sprites/score/1.png",  // 1
-    "../sprites/score/2.png",  // 2
-    "../sprites/score/3.png",  // 3
-    "../sprites/score/4.png",  // 4
-    "../sprites/score/5.png",  // 5
-    "../sprites/score/6.png",  // 6
-    "../sprites/score/7.png",  // 7
-    "../sprites/score/8.png",  // 8
-    "../sprites/score/9.png",  // 9
+    "../sprites/score/0.png", "../sprites/score/1.png",
+    "../sprites/score/2.png", "../sprites/score/3.png",
+    "../sprites/score/4.png", "../sprites/score/5.png",
+    "../sprites/score/6.png", "../sprites/score/7.png",
+    "../sprites/score/8.png", "../sprites/score/9.png",
 };
+
+constexpr const char* BG_SPRITE_PATH = "../sprites/score/scoreBG.png";
 }  // namespace ScoreConfig
 
 namespace DebugConfig {
 constexpr const char* DEFAULT_SPRITE_PATH = "../sprites/fallback.png";
-}
+constexpr const char* GAME_OVER_SPRITE_PATH = "../sprites/gameover.png";
+}  // namespace DebugConfig
 
 namespace BGConfig {
 constexpr const char* BG_SPRITE_PATH = "../sprites/jungle-bck@2x.png";

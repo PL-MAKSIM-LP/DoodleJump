@@ -56,6 +56,8 @@ class GameEngine {
   ScoreDisplay scoreDisplay;
   BonusManager bonusManager;
 
+  Sprite* gameOverSprite = nullptr;
+
   void updateMenu();
   void updatePlaying(float dt);
   void updateGameOver();

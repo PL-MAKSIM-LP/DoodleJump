@@ -50,7 +50,7 @@ class EnemyManager {
   void spawnInitialBatch(float playerY);
 
   bool checkCollision(const Object& obj1, const Object& obj2) const;
-  void spawnEnemy(float y);
+  void spawnEnemy(int x, float y);
 
   int screenWidth = 0;
   int screenHeight = 0;

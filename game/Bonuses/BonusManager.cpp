@@ -32,7 +32,6 @@ void BonusManager::update(int screenWidth, int screenHeight,
       coins.end());
 
   if (trampoline && !trampoline->isAlive()) {
-    std::cerr << "Resetting trampoline" << std::endl;
     trampoline.reset();
     spawnedTrampoline = false;
   }
@@ -74,13 +73,6 @@ void BonusManager::spawnCoin(int x, int y) {
   auto coin = bonusFactory.create(x, y, BonusType::COIN);
   if (coin) {
     coins.push_back(std::move(coin));
-    std::cerr << "[BonusManager::spawnCoin] Successfully created coin"
-              << std::endl;
-    std::cerr << "[BonusManager::spawnCoin] Total coins: " << coins.size()
-              << std::endl;
-  } else {
-    std::cerr << "[BonusManager::spawnCoin] FAILED - coin is nullptr"
-              << std::endl;
   }
 }
 
@@ -106,12 +98,8 @@ void BonusManager::render(const Camera& camera) {
 }
 
 void BonusManager::clear() {
-  int coinsBefore = coins.size();
   coins.clear();
   if (trampoline) trampoline.reset();
-  std::cerr << "[BonusManager::clear] Cleared " << std::endl;
-
-  coins.clear();
 }
 
 void BonusManager::spawnCoinsOnScreen(int screenWidth, int screenHeight,
@@ -124,15 +112,10 @@ void BonusManager::spawnCoinsOnScreen(int screenWidth, int screenHeight,
     if (!coin->isAlive()) continue;
     aliveCoinsCount++;
   }
-
-  std::cerr << "[BonusManager::spawnCoinsOnScreen] Total coins: "
-            << coins.size() << std::endl;
-
   if (aliveCoinsCount >= BonusConfig::MAX_TOTAL_COINS) return;
 
   float chance = static_cast<float>((*rng)()) / rng->max();
 
-  // Генерируем X от 20 до screenWidth - 20
   float screenCoinX = 20.0f + static_cast<float>((*rng)() % (screenWidth - 40));
   float screenCoinY =
       -static_cast<float>(((*rng)() % screenHeight) + screenHeight / 2);

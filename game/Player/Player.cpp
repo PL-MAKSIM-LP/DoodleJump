@@ -19,8 +19,6 @@ Player::~Player() {
 }
 
 void Player::init(int screenWidth, int screenHeight) {
-  std::cerr << "[Player::init] screenSize=" << screenWidth << "x"
-            << screenHeight << std::endl;
   spriteLeft = createSprite(PlayerConfig::SPRITE_LEFT_PATH);
   spriteRight = createSprite(PlayerConfig::SPRITE_RIGHT_PATH);
 
@@ -46,16 +44,15 @@ void Player::init(int screenWidth, int screenHeight) {
   x = (screenWidth / 2) - (width / 2);
   y = screenHeight - height;
   this->screenHeight = screenHeight;
-  std::cerr << "[Player] Initialized at x=" << x << " y=" << y << std::endl;
 }
 
-void Player::update(float dt, int screenWidth) {
+void Player::update(float dt, int screenWidth, const Camera& camera) {
   velY += GRAVITY * dt;
   y += velY * dt;
 
-  if (y > screenHeight - height + 5) {
+  float screenY = camera.toScreenY(y);
+  if (screenY > screenHeight) {
     alive = false;
-    std::cerr << "[Player::update] DIED " << std::endl;
   }
   velX = 0;
   if (movingLeft) {
@@ -73,10 +70,8 @@ void Player::update(float dt, int screenWidth) {
 
   x += velX * dt;
   if (x > screenWidth - width / 2) {
-    std::cerr << "[Player::update] swap to left" << std::endl;
     x = 0 - width / 2;
   } else if (x < 0 - width / 2) {
-    std::cerr << "[Player::update] swap to right" << std::endl;
     x = screenWidth - width / 2;
   }
 }
@@ -96,25 +91,10 @@ void Player::render(const Camera& camera) {
   }
 }
 
-void Player::jump(float scale) {
-  velY = -JUMP_FORCE * scale;
-  std::cerr << "[Player::jump] scale=" << scale << std::endl;
-}
+void Player::jump(float scale) { velY = -JUMP_FORCE * scale; }
 
-void Player::startMoveLeft() {
-  movingLeft = true;
-  std::cerr << "[Player::startMoveLeft]" << std::endl;
-};
-void Player::stopMoveLeft() {
-  movingLeft = false;
-  std::cerr << "[Player::stopMoveLeft]" << std::endl;
-};
+void Player::startMoveLeft() { movingLeft = true; };
+void Player::stopMoveLeft() { movingLeft = false; };
 
-void Player::startMoveRight() {
-  movingRight = true;
-  std::cerr << "[Player::startMoveRight]" << std::endl;
-};
-void Player::stopMoveRight() {
-  movingRight = false;
-  std::cerr << "[Player::stopMoveRight]" << std::endl;
-};
+void Player::startMoveRight() { movingRight = true; };
+void Player::stopMoveRight() { movingRight = false; };
