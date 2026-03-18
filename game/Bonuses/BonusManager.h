@@ -41,8 +41,9 @@ class BonusManager {
 
   void spawnCoin(int x, int y);
   void spawnTrampoline(int x, int y);
-  void spawnCoinsOnPlatforms(int screenWidth, int screenHeight,
-                             const Camera& camera);
+  void spawnCoinsOnScreen(int screenWidth, int screenHeight,
+                          const Camera& camera);
 
+  PlatformManager* platformManager = nullptr;
   std::mt19937* rng = nullptr;
 };

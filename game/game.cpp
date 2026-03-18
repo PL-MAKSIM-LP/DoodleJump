@@ -38,9 +38,7 @@ class MyFramework : public Framework {
   virtual bool Init() {
     std::cerr << "MyFramework::Init()" << std::endl;
 
-    // Create fallback PNG sprite from embedded bytes
-    // TODO: Fix PNG data - currently invalid format
-    // SpriteHelper::BytesArrayToPNG();
+    SpriteHelper::BytesArrayToPNG();
 
     background = createSprite(BGConfig::BG_SPRITE_PATH);
     if (!background) {
@@ -125,11 +123,13 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  std::cout << "Starting game with width=" << w << " height=" << h << std::endl;
+
   if (w < 0 || w > GameConfig::MAX_WIDTH || h < 0 ||
       h > GameConfig::MAX_HEIGHT) {
-    std::cout << "Invalid arguments, using defaults: width and height should "
-                 "be between 0 and 2000"
-              << std::endl;
+    std::cout << "Invalid arguments, width and height must be between 0 and "
+              << GameConfig::MAX_WIDTH << " for width and 0 and "
+              << GameConfig::MAX_HEIGHT << " for height." << std::endl;
     w = GameConfig::DEFAULT_WIDTH;
     h = GameConfig::DEFAULT_HEIGHT;
   }

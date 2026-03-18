@@ -67,13 +67,17 @@ void BonusManager::update(int screenWidth, int screenHeight,
     }
   }
 
-  spawnCoinsOnPlatforms(screenWidth, screenHeight, camera);
+  spawnCoinsOnScreen(screenWidth, screenHeight, camera);
 }
 
 void BonusManager::spawnCoin(int x, int y) {
   auto coin = bonusFactory.create(x, y, BonusType::COIN);
   if (coin) {
     coins.push_back(std::move(coin));
+    std::cerr << "[BonusManager::spawnCoin] Successfully created coin"
+              << std::endl;
+    std::cerr << "[BonusManager::spawnCoin] Total coins: " << coins.size()
+              << std::endl;
   } else {
     std::cerr << "[BonusManager::spawnCoin] FAILED - coin is nullptr"
               << std::endl;
@@ -110,8 +114,8 @@ void BonusManager::clear() {
   coins.clear();
 }
 
-void BonusManager::spawnCoinsOnPlatforms(int screenWidth, int screenHeight,
-                                         const Camera& camera) {
+void BonusManager::spawnCoinsOnScreen(int screenWidth, int screenHeight,
+                                      const Camera& camera) {
   if (!rng) return;
 
   int aliveCoinsCount = 0;
@@ -119,22 +123,20 @@ void BonusManager::spawnCoinsOnPlatforms(int screenWidth, int screenHeight,
   for (auto& coin : coins) {
     if (!coin->isAlive()) continue;
     aliveCoinsCount++;
-    float screenY = camera.toScreenY(coin->top());
-    if (screenY >= 0 && screenY < screenHeight) {
-      screenCoinsCount++;
-    }
   }
+
+  std::cerr << "[BonusManager::spawnCoinsOnScreen] Total coins: "
+            << coins.size() << std::endl;
 
   if (aliveCoinsCount >= BonusConfig::MAX_TOTAL_COINS) return;
 
-  if (screenCoinsCount >= BonusConfig::MAX_SCREEN_COINS) return;
-
   float chance = static_cast<float>((*rng)()) / rng->max();
 
-  float screenCoinX = static_cast<float>((*rng)() % screenWidth);
-  float screenCoinY = static_cast<float>((*rng)() % screenHeight);
+  // Генерируем X от 20 до screenWidth - 20
+  float screenCoinX = 20.0f + static_cast<float>((*rng)() % (screenWidth - 40));
+  float screenCoinY =
+      -static_cast<float>(((*rng)() % screenHeight) + screenHeight / 2);
 
-  // Преобразуем в мировые координаты
   float worldCoinX = screenCoinX;
   float worldCoinY = camera.toWorldY(screenCoinY);
 

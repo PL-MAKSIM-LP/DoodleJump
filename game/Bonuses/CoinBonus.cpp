@@ -10,9 +10,7 @@ CoinBonus::CoinBonus() {
   h = BonusConfig::COIN_H;
 }
 
-void CoinBonus::update(float, int) {
-  // Coins don't have movement - gravity is handled by BonusManager
-}
+void CoinBonus::update(float, int) {}
 
 void CoinBonus::applyEffect(Player&) {
   std::cerr << "[CoinBonus::applyEffect] Setting alive=false" << std::endl;

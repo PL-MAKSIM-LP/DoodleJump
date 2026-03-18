@@ -27,10 +27,12 @@ constexpr int WIDTH = 70;
 constexpr int HEIGHT = 18;
 
 // Sprite paths
-constexpr const char* SPRITE_NORMAL_PATH = "../sprites/normal.png";
-constexpr const char* SPRITE_MOVING_H_PATH = "../sprites/moveHorizontal.png";
-constexpr const char* SPRITE_MOVING_V_PATH = "../sprites/moveVertical.png";
-constexpr const char* SPRITE_BREAKABLE_PATH = "../sprites/break1.png";
+constexpr const char* SPRITE_NORMAL_PATH = "../sprites/platforms/normal.png";
+constexpr const char* SPRITE_MOVING_H_PATH =
+    "../sprites/platforms/moveHorizontal.png";
+constexpr const char* SPRITE_MOVING_V_PATH =
+    "../sprites/platforms/moveVertical.png";
+constexpr const char* SPRITE_BREAKABLE_PATH = "../sprites/platforms/break1.png";
 }  // namespace PlatformConfig
 
 namespace PlatformManagerConfig {
@@ -71,10 +73,10 @@ constexpr float FALL_SPEED = 200.0f;
 constexpr float OFFSCREEN_PADDING = 1000.0f;
 
 constexpr const char* SPRITE_BREAK_PATHS[MAX_BREAK_SPRITES] = {
-    "../sprites/break1.png",
-    "../sprites/break2.png",
-    "../sprites/break3.png",
-    "../sprites/break4.png",
+    "../sprites/platforms/break1.png",
+    "../sprites/platforms/break2.png",
+    "../sprites/platforms/break3.png",
+    "../sprites/platforms/break4.png",
 };
 }  // namespace BreakablePlatformConfig
 
@@ -130,7 +132,7 @@ constexpr int TRAMPOLINE_SPAWN_COST = 20;  // Cost to spawn trampoline
 constexpr int TRAMPOLINE_W = 70;
 constexpr int TRAMPOLINE_H = 20;
 constexpr float TRAMPOLINE_BOOST_MULT = 1.7f;
-constexpr int TRAMPOLINE_LIFE_TIME = 20000;  // milliseconds
+constexpr int TRAMPOLINE_LIFE_TIME = 30000;  // milliseconds
 constexpr const char* TRAMPOLINE_SPRITE_PATH =
     "../sprites/bonuses/trampoline.png";
 
